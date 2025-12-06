@@ -37,22 +37,54 @@
 
 <body class="min-h-screen text-gray-100">
 
-    <!-- NAVBAR -->
-    <header class="fixed top-0 left-0 w-full z-50 backdrop-blur-2xl bg-white/5 border-b border-white/10 shadow-lg">
-        <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <span class="text-xl font-bold text-indigo-400">CyberSec Intelligence</span>
+    <!-- NAVBAR (Same glassy dark style) -->
+    <header class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[75%] 
+    rounded-2xl backdrop-blur-2xl bg-white/5 border border-white/10
+    shadow-[0_8px_40px_rgba(0,0,0,0.45)] transition-all duration-300">
 
-            <ul class="hidden md:flex space-x-6">
-                <li><a href="#url-check" class="hover:text-indigo-300 transition">URL Check</a></li>
-                <li><a href="#text-check" class="hover:text-indigo-300 transition">Text Check</a></li>
-                <li><a href="#recent-attacks" class="hover:text-indigo-300 transition">Recent Attacks</a></li>
-                <li><a href="#prevention" class="hover:text-indigo-300 transition">Prevention</a></li>
-                <li><a href="#scam-patterns" class="hover:text-indigo-300 transition">Scam Patterns</a></li>
-            </ul>
+        <nav class="px-5 py-3 flex items-center justify-between">
+
+            <!-- LEFT: Title -->
+            <span class="text-lg font-semibold tracking-wide text-white/90">
+                CyberSec Intelligence
+            </span>
+
+            <!-- CENTER: Section Links -->
+            <div class="hidden md:flex items-center gap-8 text-gray-300">
+                <a href="#url-check" class="hover:text-indigo-300 transition">URL Check</a>
+                <a href="#text-check" class="hover:text-indigo-300 transition">Text Check</a>
+                <a href="#recent-attacks" class="hover:text-indigo-300 transition">Recent Attacks</a>
+                <a href="#prevention" class="hover:text-indigo-300 transition">Prevention</a>
+                <a href="#scam-patterns" class="hover:text-indigo-300 transition">Scam Patterns</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuBtn" class="md:hidden text-3xl text-gray-200">☰</button>
         </nav>
+
+        <!-- MOBILE Drawer -->
+        <div id="mobileMenu" class="hidden md:hidden p-4 border-t border-white/10 
+                                bg-[#0c1120]/95 backdrop-blur-xl rounded-b-2xl">
+            <a class="mobile-link" href="#url-check">URL Check</a>
+            <a class="mobile-link" href="#text-check">Text Check</a>
+            <a class="mobile-link" href="#recent-attacks">Recent Attacks</a>
+            <a class="mobile-link" href="#prevention">Prevention</a>
+            <a class="mobile-link" href="#scam-patterns">Scam Patterns</a>
+        </div>
     </header>
 
-    <main class="pt-24">
+    <style>
+        .mobile-link {
+            @apply block py-3 text-gray-200 hover:text-indigo-400 transition;
+        }
+    </style>
+
+    <script>
+        document.getElementById("mobileMenuBtn").onclick = () =>
+            document.getElementById("mobileMenu").classList.toggle("hidden");
+    </script>
+
+    <main class="pt-28">
 
         <!-- URL Fraud Check -->
         <section id="url-check" class="container mx-auto px-4 py-8 fade-in-up">
