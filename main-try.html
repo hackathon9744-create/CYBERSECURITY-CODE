@@ -36,46 +36,42 @@
 </head>
 
 <body class="min-h-screen text-gray-100">
-    <header class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[75%] 
-    rounded-2xl backdrop-blur-2xl bg-white/5 border border-white/10
-    shadow-[0_8px_40px_rgba(0,0,0,0.45)] transition-all duration-300">
+   <header class="fixed top-0 left-0 w-full z-50 
+    backdrop-blur-xl bg-white/5 border-b border-white/10
+    shadow-[0_4px_25px_rgba(0,0,0,0.4)]">
 
-    <nav class="px-5 py-3 flex items-center justify-between">
+    <nav class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
 
         <!-- LEFT: Logo -->
         <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 to-fuchsia-600 
-                        flex items-center justify-center shadow-lg shadow-indigo-600/30">
+            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-600 to-fuchsia-600 
+                        flex items-center justify-center shadow-lg shadow-indigo-600/30 text-sm">
                 ⚡
             </div>
 
-            <span class="hidden md:block text-lg font-semibold tracking-wide text-white/90">
+            <span class="hidden md:block text-base font-semibold tracking-wide text-white/90">
                 CyberSec Intelligence
             </span>
         </div>
 
         <!-- CENTER: Icon Menu -->
-        <div class="hidden md:flex items-center gap-8">
+        <div class="hidden md:flex items-center gap-6 text-xl">
 
-            <a href="index.html" class="group relative text-2xl hover:scale-110 transition">
-                🏠
-                <span class="tooltip">Home</span>
+            <a href="index.html" class="group relative hover:scale-110 transition">
+                🏠 <span class="tooltip">Home</span>
             </a>
 
-            <a href="about-1.html" class="group relative text-2xl hover:scale-110 transition">
-                ℹ️
-                <span class="tooltip">About</span>
+            <a href="about-1.html" class="group relative hover:scale-110 transition">
+                ℹ️ <span class="tooltip">About</span>
             </a>
 
-            <a href="contact.html" class="group relative text-2xl hover:scale-110 transition">
-                📞
-                <span class="tooltip">Contact</span>
+            <a href="contact.html" class="group relative hover:scale-110 transition">
+                📞 <span class="tooltip">Contact</span>
             </a>
 
             <!-- Tools Dropdown -->
-            <div class="relative group text-2xl cursor-pointer hover:scale-110 transition">
+            <div class="relative group cursor-pointer hover:scale-110 transition">
                 🛠️
-
                 <div class="dropdown">
                     <a href="#url-check">🔗 URL Scanner</a>
                     <a href="#text-check">📝 Text Analyzer</a>
@@ -88,8 +84,8 @@
         <!-- RIGHT: Profile -->
         <div class="relative group cursor-pointer">
             <img src="https://i.ibb.co/7WymQ44/user.png"
-                class="w-10 h-10 rounded-full border border-white/20 
-                       shadow-md hover:scale-105 transition"/>
+                class="w-9 h-9 rounded-full border border-white/20 
+                shadow-md hover:scale-105 transition"/>
 
             <div class="dropdown-profile">
                 <a>Profile</a>
@@ -104,7 +100,7 @@
 
     <!-- MOBILE Drawer -->
     <div id="mobileMenu" class="hidden md:hidden p-4 border-t border-white/10 
-                                bg-[#0c1120]/95 backdrop-blur-xl rounded-b-2xl">
+                                bg-[#0c1120]/95 backdrop-blur-xl">
         <a class="mobile-link">Home</a>
         <a class="mobile-link">About</a>
         <a class="mobile-link">Contact</a>
@@ -119,6 +115,7 @@
         <a class="mobile-link">📊 Scam Database</a>
     </div>
 </header>
+
 
 <style>
 /* Tooltip for icons */
@@ -278,4 +275,5 @@
 </body>
 
 </html>
+
 
