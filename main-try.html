@@ -36,72 +36,49 @@
 </head>
 
 <body class="min-h-screen text-gray-100">
-   <header class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[75%] 
-    rounded-xl backdrop-blur-2xl bg-white/5 border border-white/10
-    shadow-[0_6px_30px_rgba(0,0,0,0.45)] transition-all duration-300">
+  <header class="fixed top-0 left-0 w-full z-50 
+    backdrop-blur-2xl bg-white/10 border-b border-white/10
+    shadow-[0_6px_30px_rgba(0,0,0,0.4)]">
 
-    <nav class="px-4 py-2 flex items-center justify-between">
+    <nav class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
 
         <!-- LEFT: Logo -->
-        <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-fuchsia-600 
-                        flex items-center justify-center shadow-md shadow-indigo-600/30 text-lg">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-fuchsia-600 
+                        flex items-center justify-center shadow-md text-lg">
                 ⚡
             </div>
 
-            <span class="hidden md:block text-base font-semibold tracking-wide text-white/90">
+            <span class="text-lg font-semibold tracking-wide text-white/90">
                 CyberSec Intelligence
             </span>
         </div>
 
-        <!-- CENTER: Icon Menu -->
-        <div class="hidden md:flex items-center gap-6">
-
-            <a href="index.html" class="group relative text-xl hover:scale-110 transition">
-                🏠
-                <span class="tooltip">Home</span>
-            </a>
-
-            <a href="about-1.html" class="group relative text-xl hover:scale-110 transition">
-                ℹ️
-                <span class="tooltip">About</span>
-            </a>
-
-            <a href="contact.html" class="group relative text-xl hover:scale-110 transition">
-                📞
-                <span class="tooltip">Contact</span>
-            </a>
-
-            <!-- Tools Dropdown -->
-            <div class="relative group text-xl cursor-pointer hover:scale-110 transition">
-                🛠️
-
-                <div class="dropdown">
-                    <a href="#url-check">🔗 URL Scanner</a>
-                    <a href="#text-check">📝 Text Analyzer</a>
-                    <a href="#">🚨 Report Scam</a>
-                    <a href="#">📊 Scam DB</a>
-                </div>
-            </div>
+        <!-- CENTER ICON NAVIGATION -->
+        <div class="hidden md:flex items-center gap-10 text-xl">
+            <a href="index.html" class="hover:scale-110 transition">🏠</a>
+            <a href="about-1.html" class="hover:scale-110 transition">ℹ️</a>
+            <a href="contact.html" class="hover:scale-110 transition">📞</a>
         </div>
 
         <!-- RIGHT: Profile -->
-        <div class="relative group cursor-pointer">
+        <div class="flex items-center">
             <img src="https://i.ibb.co/7WymQ44/user.png"
-                class="w-8 h-8 rounded-full border border-white/20 
-                       shadow-md hover:scale-105 transition"/>
-
-            <div class="dropdown-profile">
-                <a>Profile</a>
-                <a>Settings</a>
-                <a class="text-red-400">Logout</a>
-            </div>
+                class="w-9 h-9 rounded-full border border-white/20 shadow-md hover:scale-105 transition"/>
         </div>
 
-        <!-- Mobile Button -->
-        <button id="mobileMenuBtn" class="md:hidden text-2xl text-gray-200">☰</button>
+        <!-- MOBILE BTN -->
+        <button id="mobileMenuBtn" class="md:hidden text-3xl text-gray-200">☰</button>
     </nav>
+
+    <!-- MOBILE MENU -->
+    <div id="mobileMenu" class="hidden md:hidden px-6 pb-4 bg-black/40 backdrop-blur-xl">
+        <a class="block py-2 text-gray-200">Home</a>
+        <a class="block py-2 text-gray-200">About</a>
+        <a class="block py-2 text-gray-200">Contact</a>
+    </div>
 </header>
+
 
 
 
@@ -264,6 +241,7 @@
 </body>
 
 </html>
+
 
 
 
