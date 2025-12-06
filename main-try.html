@@ -13,9 +13,20 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172b;
             overflow-x: hidden;
             position: relative;
+            background: #0f172b;
+            color: #f1f1f1;
+        }
+
+        /* MATRIX RAIN CANVAS */
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
         }
 
         /* Navbar */
@@ -37,7 +48,7 @@
             left: 0;
             width: 0%;
             height: 2px;
-            background: #14b8a6; /* teal accent */
+            background: #14b8a6;
             transition: 0.3s;
         }
 
@@ -64,14 +75,19 @@
             left: -100%;
             width: 200%;
             height: 100%;
-            background: linear-gradient(120deg, rgba(20, 184, 166,0.2), rgba(79,70,229,0.2), rgba(20, 184, 166,0.2));
+            background: linear-gradient(120deg, rgba(20, 184, 166, 0.2), rgba(79, 70, 229, 0.2), rgba(20, 184, 166, 0.2));
             animation: slide 6s linear infinite;
             pointer-events: none;
         }
 
         @keyframes slide {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
 
         /* Result boxes */
@@ -84,39 +100,22 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Pulsing nodes */
-        .nodes {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
+        /* Footer links */
+        footer a {
+            color: #93c5fd;
+            text-decoration: none;
         }
 
-        .node {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: #0ff;
-            border-radius: 50%;
-            animation: pulse 2s infinite ease-in-out alternate;
+        footer a:hover {
+            text-decoration: underline;
         }
-
-        @keyframes pulse {
-            0% { transform: scale(0.5); opacity: 0.3; }
-            100% { transform: scale(1.5); opacity: 1; }
-        }
-
-        footer a { color: #93c5fd; text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
-
     </style>
 </head>
 
 <body class="min-h-screen text-gray-100 relative">
 
-    <!-- Network nodes -->
-    <div class="nodes" id="nodes"></div>
+    <!-- MATRIX BACKGROUND -->
+    <canvas id="matrixCanvas"></canvas>
 
     <!-- Navbar -->
     <header class="fixed top-0 left-0 w-full z-50 shadow-lg">
@@ -204,6 +203,7 @@
     </footer>
 
     <script>
+        /* URL & Text Handling */
         const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
 
         async function handleUrlSubmit(e) {
@@ -259,16 +259,43 @@
         document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
         document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
 
-        /* Nodes background */
-        const nodesContainer = document.getElementById("nodes");
-        for (let i = 0; i < 40; i++) {
-            const node = document.createElement("div");
-            node.classList.add("node");
-            node.style.top = Math.random() * 100 + "%";
-            node.style.left = Math.random() * 100 + "%";
-            node.style.animationDelay = Math.random() * 2 + "s";
-            nodesContainer.appendChild(node);
+        /* MATRIX RAIN EFFECT */
+        const canvas = document.getElementById("matrixCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const letters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const fontSize = 16;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0ff';
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
         }
+
+        setInterval(drawMatrix, 50);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
     </script>
 </body>
 
