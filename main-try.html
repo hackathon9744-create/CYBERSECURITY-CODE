@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberSec Intelligence Dashboard</title>
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -19,40 +18,73 @@
             position: relative;
         }
 
-        /* Matrix-style falling code lines */
-        .matrix {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
+        /* Navbar */
+        nav {
+            background: linear-gradient(90deg, #1e3a8a, #6d28d9);
+            z-index: 50;
         }
 
-        .matrix span {
+        nav a {
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        nav a::after {
+            content: '';
             position: absolute;
-            top: -100%;
-            color: #00ff99;
-            font-family: monospace;
-            font-size: 12px;
-            opacity: 0.4;
-            white-space: nowrap;
-            animation: fall linear infinite;
+            bottom: -4px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: #14b8a6; /* teal accent */
+            transition: 0.3s;
         }
 
-        @keyframes fall {
-            0% {
-                transform: translateY(-100%);
-            }
-
-            100% {
-                transform: translateY(110vh);
-            }
+        nav a:hover::after {
+            width: 100%;
         }
 
-        /* Network node animation */
+        /* Section hover animation */
+        .section-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .section-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.5);
+        }
+
+        /* Moving gradient overlay */
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(20, 184, 166,0.2), rgba(79,70,229,0.2), rgba(20, 184, 166,0.2));
+            animation: slide 6s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes slide {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Result boxes */
+        .result-box {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            backdrop-blur: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Pulsing nodes */
         .nodes {
             position: fixed;
             width: 100%;
@@ -71,58 +103,19 @@
         }
 
         @keyframes pulse {
-            0% {
-                transform: scale(0.5);
-                opacity: 0.3;
-            }
-
-            100% {
-                transform: scale(1.5);
-                opacity: 1;
-            }
+            0% { transform: scale(0.5); opacity: 0.3; }
+            100% { transform: scale(1.5); opacity: 1; }
         }
 
-        /* Navbar styles */
-        nav {
-            background: linear-gradient(90deg, #1e3a8a, #6d28d9);
-            z-index: 50;
-        }
-
-        nav a {
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        nav a:hover {
-            transform: scale(1.05);
-        }
-
-        /* Result boxes */
-        .result-box {
-            display: none;
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            backdrop-blur: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        footer a {
-            color: #93c5fd;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
+        footer a { color: #93c5fd; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
 
     </style>
 </head>
 
 <body class="min-h-screen text-gray-100 relative">
 
-    <!-- Hacker background animations -->
-    <div class="matrix" id="matrix"></div>
+    <!-- Network nodes -->
     <div class="nodes" id="nodes"></div>
 
     <!-- Navbar -->
@@ -130,67 +123,69 @@
         <nav class="flex justify-between items-center px-8 py-4">
             <div class="text-white text-2xl font-bold">CyberSec Intelligence</div>
             <div class="hidden md:flex space-x-6">
-                <a href="#url-check" class="text-white hover:text-teal-400">URL Check</a>
-                <a href="#text-check" class="text-white hover:text-teal-400">Text Analysis</a>
-                <a href="#recent-attacks" class="text-white hover:text-teal-400">Recent Attacks</a>
-                <a href="#prevention" class="text-white hover:text-teal-400">Prevention</a>
+                <a href="#url-check">URL Check</a>
+                <a href="#text-check">Text Analysis</a>
+                <a href="#recent-attacks">Recent Attacks</a>
+                <a href="#prevention">Prevention</a>
             </div>
         </nav>
     </header>
 
-    <main class="pt-28 px-4 md:px-16 relative z-10">
+    <main class="pt-28 px-4 md:px-16 relative z-10 space-y-10">
 
         <!-- URL Fraud Check -->
-        <section id="url-check" class="fade-in-up mb-10">
-            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
+        <section id="url-check" class="section-card relative">
+            <div class="gradient-overlay"></div>
+            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md relative z-10">
                 <h2 class="text-xl font-semibold text-yellow-400 mb-3">Check URLs for Fraud</h2>
                 <form id="urlForm">
                     <input id="urlInput" type="url" placeholder="https://example.com"
                         class="w-full px-4 py-2 bg-slate-900/60 border border-white/20 rounded-lg text-white placeholder-gray-400">
-                    <button
-                        class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Check</button>
+                    <button class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Check</button>
                 </form>
                 <div id="urlResult" class="result-box"></div>
             </div>
         </section>
 
         <!-- Text Scam Detection -->
-        <section id="text-check" class="fade-in-up mb-10">
-            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
+        <section id="text-check" class="section-card relative">
+            <div class="gradient-overlay"></div>
+            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md relative z-10">
                 <h2 class="text-xl font-semibold text-teal-400 mb-3">Text / Scam Detection</h2>
                 <form id="textForm">
                     <textarea id="textInput" rows="6" placeholder="Paste suspicious text..."
                         class="w-full px-4 py-2 bg-slate-900/60 border border-white/20 rounded-lg text-white placeholder-gray-400"></textarea>
-                    <button
-                        class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Analyze</button>
+                    <button class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Analyze</button>
                 </form>
                 <div id="textResult" class="result-box"></div>
             </div>
         </section>
 
         <!-- Recent Cyber Attacks -->
-        <section id="recent-attacks" class="fade-in-up mb-10">
-            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
+        <section id="recent-attacks" class="section-card relative">
+            <div class="gradient-overlay"></div>
+            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md relative z-10">
                 <h2 class="text-xl font-semibold text-red-400 mb-3">Recent Cyber Attacks</h2>
                 <ul class="list-disc list-inside space-y-2">
                     <li>SolarWinds supply chain attack – 2020</li>
                     <li>Colonial Pipeline ransomware attack – 2021</li>
-                    <li>Facebook data breach exposing 533 million accounts – 2019</li>
-                    <li>JBS meat supplier ransomware attack – 2021</li>
+                    <li>Facebook data breach – 2019</li>
+                    <li>JBS ransomware attack – 2021</li>
                 </ul>
             </div>
         </section>
 
         <!-- Prevention Steps -->
-        <section id="prevention" class="fade-in-up mb-10">
-            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
+        <section id="prevention" class="section-card relative">
+            <div class="gradient-overlay"></div>
+            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md relative z-10">
                 <h2 class="text-xl font-semibold text-green-400 mb-3">Steps for Prevention</h2>
                 <ul class="list-disc list-inside space-y-2">
-                    <li>Keep all software and systems updated.</li>
-                    <li>Use strong, unique passwords and enable 2FA.</li>
-                    <li>Be cautious with email links and attachments.</li>
-                    <li>Regularly backup critical data offline.</li>
-                    <li>Implement security awareness training.</li>
+                    <li>Keep software updated</li>
+                    <li>Use strong passwords & 2FA</li>
+                    <li>Be cautious with links & attachments</li>
+                    <li>Regular backups</li>
+                    <li>Security awareness training</li>
                 </ul>
             </div>
         </section>
@@ -201,14 +196,13 @@
         <div class="flex flex-col md:flex-row justify-between items-center">
             <p>&copy; 2025 CyberSec Intelligence. All rights reserved.</p>
             <div class="space-x-4 mt-2 md:mt-0">
-                <a href="#" target="_blank">Twitter</a>
-                <a href="#" target="_blank">LinkedIn</a>
-                <a href="#" target="_blank">GitHub</a>
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">GitHub</a>
             </div>
         </div>
     </footer>
 
-    <!-- Backend JS -->
     <script>
         const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
 
@@ -216,7 +210,6 @@
             e.preventDefault();
             const url = document.getElementById("urlInput").value;
             const box = document.getElementById("urlResult");
-
             box.style.display = "block";
             box.textContent = "🔍 Checking URL...";
 
@@ -227,12 +220,10 @@
                     body: JSON.stringify({ text: url, use_openai: true })
                 });
                 const out = await r.json();
-
                 box.className = "result-box block " +
                     (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
                         out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
                             "bg-teal-500/20 text-teal-300 border-teal-500/40");
-
                 box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
             } catch {
                 box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
@@ -244,7 +235,6 @@
             e.preventDefault();
             const text = document.getElementById("textInput").value;
             const box = document.getElementById("textResult");
-
             box.style.display = "block";
             box.textContent = "🔍 Analyzing text...";
 
@@ -255,12 +245,10 @@
                     body: JSON.stringify({ text: text, use_openai: true })
                 });
                 const out = await r.json();
-
                 box.className = "result-box block " +
                     (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
                         out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
                             "bg-teal-500/20 text-teal-300 border-teal-500/40");
-
                 box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
             } catch {
                 box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
@@ -271,19 +259,7 @@
         document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
         document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
 
-        /* Matrix animation generation */
-        const matrixContainer = document.getElementById("matrix");
-        const columns = Math.floor(window.innerWidth / 20);
-        const characters = "01";
-        for (let i = 0; i < columns; i++) {
-            const span = document.createElement("span");
-            span.textContent = Array(30).fill(0).map(() => characters[Math.floor(Math.random() * characters.length)]).join("");
-            span.style.left = i * 20 + "px";
-            span.style.animationDuration = (5 + Math.random() * 10) + "s";
-            matrixContainer.appendChild(span);
-        }
-
-        /* Network nodes animation */
+        /* Nodes background */
         const nodesContainer = document.getElementById("nodes");
         for (let i = 0; i < 40; i++) {
             const node = document.createElement("div");
@@ -297,4 +273,3 @@
 </body>
 
 </html>
-
