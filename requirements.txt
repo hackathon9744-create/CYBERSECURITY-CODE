@@ -8,4 +8,6 @@ gdown
 openai
 python-dotenv
 tldextract
+Pillow
 requests
+pyzbar
