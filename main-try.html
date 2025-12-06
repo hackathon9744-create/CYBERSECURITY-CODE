@@ -220,11 +220,28 @@
                     body: JSON.stringify({ text: url, use_openai: true })
                 });
                 const out = await r.json();
-                box.className = "result-box block " +
-                    (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
-                        out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
-                            "bg-teal-500/20 text-teal-300 border-teal-500/40");
-                box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
+               (function () {
+    const colorClasses = [
+        "bg-red-500/20","text-red-300","border-red-500/40",
+        "bg-yellow-500/20","text-yellow-300","border-yellow-500/40",
+        "bg-teal-500/20","text-teal-300","border-teal-500/40"
+    ];
+    box.classList.remove(...colorClasses);
+
+    const riskRaw = out?.final_risk?.toString().trim().toLowerCase() || "";
+    const explanationText = Array.isArray(out.explanation) ? out.explanation.join(" ") : out.explanation;
+
+    if (riskRaw.includes("high")) {
+        box.classList.add("bg-red-500/20","text-red-300","border-red-500/40");
+    } else if (riskRaw.includes("medium")) {
+        box.classList.add("bg-yellow-500/20","text-yellow-300","border-yellow-500/40");
+    } else {
+        box.classList.add("bg-teal-500/20","text-teal-300","border-teal-500/40");
+    }
+
+    box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${explanationText}`;
+})();
+
             } catch {
                 box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
                 box.textContent = "❌ Backend unreachable.";
@@ -245,11 +262,28 @@
                     body: JSON.stringify({ text: text, use_openai: true })
                 });
                 const out = await r.json();
-                box.className = "result-box block " +
-                    (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
-                        out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
-                            "bg-teal-500/20 text-teal-300 border-teal-500/40");
-                box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
+               (function () {
+    const colorClasses = [
+        "bg-red-500/20","text-red-300","border-red-500/40",
+        "bg-yellow-500/20","text-yellow-300","border-yellow-500/40",
+        "bg-teal-500/20","text-teal-300","border-teal-500/40"
+    ];
+    box.classList.remove(...colorClasses);
+
+    const riskRaw = out?.final_risk?.toString().trim().toLowerCase() || "";
+    const explanationText = Array.isArray(out.explanation) ? out.explanation.join(" ") : out.explanation;
+
+    if (riskRaw.includes("high")) {
+        box.classList.add("bg-red-500/20","text-red-300","border-red-500/40");
+    } else if (riskRaw.includes("medium")) {
+        box.classList.add("bg-yellow-500/20","text-yellow-300","border-yellow-500/40");
+    } else {
+        box.classList.add("bg-teal-500/20","text-teal-300","border-teal-500/40");
+    }
+
+    box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${explanationText}`;
+})();
+
             } catch {
                 box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
                 box.textContent = "❌ Backend unreachable.";
@@ -300,5 +334,6 @@
 </body>
 
 </html>
+
 
 
