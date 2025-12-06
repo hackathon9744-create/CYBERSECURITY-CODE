@@ -217,6 +217,7 @@
 
         // QR upload handler
 document.getElementById("qrAnalyzeBtn").addEventListener("click", async (e) => {
+    console.log("clicked");
     e.preventDefault();
     const input = document.getElementById("qrFileInput");
     if (!input.files || input.files.length === 0) {
@@ -382,6 +383,7 @@ document.getElementById("qrAnalyzeBtn").addEventListener("click", async (e) => {
 </body>
 
 </html>
+
 
 
 
