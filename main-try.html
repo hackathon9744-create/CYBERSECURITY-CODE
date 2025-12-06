@@ -224,4 +224,77 @@
                 const r = await fetch(BACKEND_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: url, use_ope_
+                    body: JSON.stringify({ text: url, use_openai: true })
+                });
+                const out = await r.json();
+
+                box.className = "result-box block " +
+                    (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
+                        out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
+                            "bg-teal-500/20 text-teal-300 border-teal-500/40");
+
+                box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
+            } catch {
+                box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
+                box.textContent = "❌ Backend unreachable.";
+            }
+        }
+
+        async function handleTextSubmit(e) {
+            e.preventDefault();
+            const text = document.getElementById("textInput").value;
+            const box = document.getElementById("textResult");
+
+            box.style.display = "block";
+            box.textContent = "🔍 Analyzing text...";
+
+            try {
+                const r = await fetch(BACKEND_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: text, use_openai: true })
+                });
+                const out = await r.json();
+
+                box.className = "result-box block " +
+                    (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
+                        out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
+                            "bg-teal-500/20 text-teal-300 border-teal-500/40");
+
+                box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
+            } catch {
+                box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
+                box.textContent = "❌ Backend unreachable.";
+            }
+        }
+
+        document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
+        document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
+
+        /* Matrix animation generation */
+        const matrixContainer = document.getElementById("matrix");
+        const columns = Math.floor(window.innerWidth / 20);
+        const characters = "01";
+        for (let i = 0; i < columns; i++) {
+            const span = document.createElement("span");
+            span.textContent = Array(30).fill(0).map(() => characters[Math.floor(Math.random() * characters.length)]).join("");
+            span.style.left = i * 20 + "px";
+            span.style.animationDuration = (5 + Math.random() * 10) + "s";
+            matrixContainer.appendChild(span);
+        }
+
+        /* Network nodes animation */
+        const nodesContainer = document.getElementById("nodes");
+        for (let i = 0; i < 40; i++) {
+            const node = document.createElement("div");
+            node.classList.add("node");
+            node.style.top = Math.random() * 100 + "%";
+            node.style.left = Math.random() * 100 + "%";
+            node.style.animationDelay = Math.random() * 2 + "s";
+            nodesContainer.appendChild(node);
+        }
+    </script>
+</body>
+
+</html>
+
