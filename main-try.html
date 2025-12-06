@@ -147,15 +147,7 @@
             </div>
         </section>
 
-        <!-- QR CODE CHECKER -->
-<section class="bg-white/5 p-6 rounded-xl border border-white/10 shadow-xl fade-in-up delay-250">
-    <h3 class="text-xl font-medium text-purple-400 mb-4 flex items-center">
-        <svg class="w-6 h-6 mr-2 text-purple-400" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        QR Code Scam Check
-    </h3>
-    <input id="qrFileInput" type="file" accept="image/*" class="mb-3 block w-full text-sm text-gray-300"/>
-    <button id="qrAnalyzeBtn" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 rounded-lg">Analyze QR Image</button>
-</section>
+        
 
         <!-- Text Scam Detection -->
         <section id="text-check" class="section-card relative">
@@ -215,43 +207,6 @@
 
     <script>
 
-        // QR upload handler
-document.getElementById("qrAnalyzeBtn").addEventListener("click", async (e) => {
-    console.log("clicked");
-    e.preventDefault();
-    const input = document.getElementById("qrFileInput");
-    if (!input.files || input.files.length === 0) {
-        showMessage("warn", "Please select an image file containing a QR code.");
-        return;
-    }
-    const file = input.files[0];
-
-    showMessage("info", "🔍 Decoding QR...");
-
-    try {
-        const fd = new FormData();
-        fd.append("file", file);
-
-        const res = await fetch("https://cybersecurity-code-1.onrender.com/analyze_qr", {
-            method: "POST",
-            body: fd
-        });
-
-        const out = await res.json();
-        console.log("QR result:", out);
-
-        // format display (reuse same showMessage style)
-        showMessage(
-            out.final_risk === "High" ? "error" :
-            out.final_risk === "Medium" ? "warn" : "success",
-            `Risk: ${out.final_risk}\nScam Type: ${out.scam_type}\n\n${(out.explanation||[]).join(" ")}\n\nDecoded: ${out.decoded_data || 'N/A'}`
-        );
-
-    } catch (err) {
-        console.error(err);
-        showMessage("error", "❌ QR analysis failed (network/backend).");
-    }
-});
         /* URL & Text Handling */
         const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
 
@@ -383,6 +338,7 @@ document.getElementById("qrAnalyzeBtn").addEventListener("click", async (e) => {
 </body>
 
 </html>
+
 
 
 
