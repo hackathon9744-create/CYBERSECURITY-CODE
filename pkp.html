@@ -68,4 +68,424 @@
                     <form id="textForm">
                         <label for="textInput" class="block text-sm font-medium text-gray-700 mb-1">Text Content</label>
                         <textarea id="textInput" rows="6" placeholder="Paste text to check for AI generation..." required
-             
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition duration-150"></textarea>
+                        <button type="submit"
+                            class="mt-4 w-full bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition duration-200 shadow-md font-semibold">
+                            Analyze AI Score
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Submission Results/Message Box -->
+                <div id="messageBox" class="p-4 rounded-xl hidden transition-all duration-300 ease-in-out" role="alert">
+                    <!-- Dynamic messages will be inserted here -->
+                </div>
+
+            </section>
+
+            <!-- NEWS SIDEBAR (Right Side) -->
+            <aside class="lg:w-2/5 w-full">
+                <div class="bg-white p-6 rounded-xl shadow-2xl border border-gray-200 sticky lg:top-24">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center border-b pb-2">
+                        <svg class="w-6 h-6 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0l-5-5m5 5l-5 5"></path><path d="M2.5 5A2.5 2.5 0 015 2.5h14A2.5 2.5 0 0121.5 5v14A2.5 2.5 0 0119 21.5H5A2.5 2.5 0 012.5 19V5z"></path></svg>
+                        Global Headlines
+                    </h2>
+                    
+                    <!-- News Feed Container -->
+                    <div id="news-feed" class="space-y-4 max-h-[70vh] overflow-y-auto">
+                        <!-- Loading indicator or news articles will populate here -->
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-gray-100 text-center">
+                        <button id="refreshNewsButton"
+                            class="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition duration-150 flex items-center justify-center mx-auto">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11.356 2a8.001 8.001 0 01-15.356 2m0 0H4"></path></svg>
+                            Refresh News
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- JavaScript and Module Imports -->
+    <script type="module">
+        // --- Firebase Imports and Configuration ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Global Variables (Provided by Canvas Environment) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof _firebase_config !== 'undefined' ? JSON.parse(_firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        let db;
+        let auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        // --- Mock Data and API Configuration ---
+        const MOCK_API_ENDPOINT = 'https://mock-news-api.com/v2/top-headlines';
+        const MOCK_API_KEY = 'YOUR_MOCK_API_KEY'; // Placeholder
+
+        // Mock response data based on search results
+        const mockNewsData = {
+            status: "ok",
+            totalResults: 5,
+            articles: [
+                {
+                    title: "SpaceX launches historic commercial mission to Mars orbit",
+                    description: "The Falcon Heavy successfully deployed the first private orbital research station, marking a new era in deep space exploration.",
+                    source: "Astro Tech Daily",
+                    url: "#",
+                    publishedAt: "2025-12-06T10:00:00Z"
+                },
+                {
+                    title: "Global Markets Rally: Central Banks signal end to rate hike cycle",
+                    description: "Stock indices across Asia and Europe surged following coordinated announcements from major financial bodies.",
+                    source: "Financial Times",
+                    url: "#",
+                    publishedAt: "2025-12-06T09:30:00Z"
+                },
+                {
+                    title: "New AI Model ‘Gemini’ achieves state-of-the-art results in language tasks",
+                    description: "Google's latest AI development promises breakthroughs in conversational ability and code generation.",
+                    source: "TechCrunch",
+                    url: "#",
+                    publishedAt: "2025-12-05T18:45:00Z"
+                },
+                {
+                    title: "Climate Summit: Nations pledge accelerated transition to green energy",
+                    description: "A consensus was reached in Dubai to triple renewable energy capacity by 2030, though fossil fuel phase-out remains contentious.",
+                    source: "World News Network",
+                    url: "#",
+                    publishedAt: "2025-12-05T14:00:00Z"
+                },
+                {
+                    title: "Euro 2028 Qualifiers: Major upsets as two top-ranked teams fail to advance",
+                    description: "Fans react to the stunning elimination of perennial favorites in the final group stage matches.",
+                    source: "Sports 360",
+                    url: "#",
+                    publishedAt: "2025-12-04T22:00:00Z"
+                }
+            ]
+        };
+        
+        // --- Utility Functions ---
+
+        /**
+         * Function to display non-intrusive messages in the submission area.
+         */
+        function showMessage(type, message) {
+            const box = document.getElementById('messageBox');
+            box.textContent = message;
+            box.className = 'p-4 rounded-xl transition-all duration-300 ease-in-out'; // Reset classes
+            
+            if (type === 'success') {
+                box.classList.add('bg-green-100', 'text-green-800', 'shadow-md', 'border-green-300');
+            } else if (type === 'error') {
+                box.classList.add('bg-red-100', 'text-red-800', 'shadow-md', 'border-red-300');
+            } else if (type === 'warn') {
+                 box.classList.add('bg-yellow-100', 'text-yellow-800', 'shadow-md', 'border-yellow-300');
+            } else {
+                box.classList.add('bg-blue-100', 'text-blue-800', 'shadow-md', 'border-blue-300');
+            }
+            box.classList.remove('hidden');
+            
+            // Hide the message after 8 seconds
+            setTimeout(() => {
+                box.classList.add('hidden');
+            }, 8000);
+        }
+        
+        /**
+         * Simulates the API fetch operation with exponential backoff.
+         */
+        async function fetchWithBackoff(url, options, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(HTTP error! status: ${response.status});
+                    }
+                    return await response.json();
+                } catch (error) {
+                    if (i === retries - 1) {
+                        console.error('Final API request failed after all retries:', error);
+                        throw error;
+                    }
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 500;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+        
+        // --- Firebase Core Logic ---
+
+        async function initializeFirebase() {
+            if (!firebaseConfig) {
+                console.error("Firebase config is missing.");
+                isAuthReady = true; // Still set to true to unblock UI logic
+                return;
+            }
+            // setLogLevel('debug'); // Uncomment to see Firebase logs
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase authentication failed:", error);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log("User authenticated. ID:", userId);
+                } else {
+                    console.log("Signed out or anonymous.");
+                    // In case initial token failed, sign in anonymously
+                    if (!userId) {
+                        userId = crypto.randomUUID(); // Fallback to anonymous ID
+                    }
+                }
+                isAuthReady = true;
+            });
+        }
+        
+        /**
+         * Saves a submission log to Firestore.
+         */
+        async function saveSubmissionLog(type, data) {
+            if (!db || !userId || !isAuthReady) {
+                console.warn("Firestore not ready. Cannot save log.");
+                return;
+            }
+
+            const logData = {
+                ...data,
+                type: type,
+                timestamp: new Date().toISOString(),
+                userId: userId
+            };
+
+            try {
+                // Use private path: /artifacts/{appId}/users/{userId}/submissions
+                const submissionsRef = collection(db, artifacts/${appId}/users/${userId}/submissions);
+                await addDoc(submissionsRef, logData);
+                console.log(Successfully logged ${type} submission.);
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
+        }
+        
+        // --- Analysis Simulation Logic ---
+
+        /**
+         * Simulates checking a URL against a fraud data sheet.
+         */
+        function checkUrlFraud(url) {
+            // Simulation: Check for patterns that might indicate risk
+            const isPhishing = url.includes('login') && !url.includes('google.com') ||
+                               url.includes('free-money') ||
+                               url.includes('badsite.xyz');
+            
+            let riskLevel;
+            let reason;
+
+            if (isPhishing) {
+                riskLevel = 'High Risk';
+                reason = 'Suspicious domain patterns detected. A high risk of fraud is flagged.';
+            } else if (url.startsWith('https://')) {
+                riskLevel = 'Safe';
+                reason = 'Uses HTTPS and passed basic security checks.';
+            } else {
+                riskLevel = 'Moderate Risk';
+                reason = 'No HTTPS detected. Proceed with caution.';
+            }
+
+            return { riskLevel, reason };
+        }
+
+        /**
+         * Simulates checking text for AI generation likelihood.
+         */
+        function checkTextAI(text) {
+            // Simulation: Long, perfectly structured text suggests AI
+            const perfectScore = text.length > 400 && text.split('. ').every(s => s.length > 20);
+            const isShort = text.length < 50;
+
+            let score; // 0.0 to 1.0
+            
+            if (perfectScore) {
+                score = (0.85 + Math.random() * 0.10); // 85-95%
+            } else if (isShort) {
+                score = (0.05 + Math.random() * 0.20); // 5-25%
+            } else {
+                score = (0.40 + Math.random() * 0.35); // 40-75%
+            }
+
+            const percentage = (score * 100).toFixed(1);
+            const isAIGenerated = score > 0.8;
+
+            return { percentage, isAIGenerated };
+        }
+
+
+        // --- Submission Handlers ---
+
+        async function handleUrlSubmit(event) {
+            event.preventDefault();
+            const urlInput = document.getElementById('urlInput');
+            const url = urlInput.value;
+            
+            // 1. Run Mock Analysis
+            const analysis = checkUrlFraud(url);
+            
+            // 2. Format Message
+            let messageType;
+            let message;
+            
+            if (analysis.riskLevel === 'High Risk') {
+                messageType = 'error';
+                message = 🚨 HIGH RISK DETECTED: ${analysis.reason}. **DO NOT PROCEED.**;
+            } else if (analysis.riskLevel === 'Moderate Risk') {
+                messageType = 'warn';
+                message = ⚠ MODERATE RISK: ${analysis.reason}. Please review manually.;
+            } else {
+                messageType = 'success';
+                message = ✅ URL APPEARS SAFE: ${analysis.reason};
+            }
+
+            // 3. Display Message
+            showMessage(messageType, message);
+            
+            // 4. Log to Firestore
+            await saveSubmissionLog('url', { url: url, result: analysis });
+
+            urlInput.value = ''; // Clear input
+        }
+
+        async function handleTextSubmit(event) {
+            event.preventDefault();
+            const textInput = document.getElementById('textInput');
+            const text = textInput.value;
+
+            // 1. Run Mock Analysis
+            const analysis = checkTextAI(text);
+            
+            // 2. Format Message
+            let messageType;
+            let message;
+
+            if (analysis.isAIGenerated) {
+                messageType = 'error'; // Using error/red for a high-alert AI score
+                message = 🤖 AI DETECTED: This text has a **${analysis.percentage}%** chance of being AI generated.;
+            } else if (analysis.percentage > 40) {
+                messageType = 'warn';
+                message = ⚠ MODERATE AI SCORE: ${analysis.percentage}% chance of AI generation. Review for originality.;
+            } else {
+                messageType = 'success';
+                message = ✅ HUMAN LIKELY: ${analysis.percentage}% chance of AI generation. Text appears organic.;
+            }
+
+            // 3. Display Message
+            showMessage(messageType, message);
+
+            // 4. Log to Firestore
+            await saveSubmissionLog('text', { textSnippet: text.substring(0, 100) + '...', fullLength: text.length, result: analysis });
+            
+            textInput.value = ''; // Clear input
+        }
+        
+        // --- News API Interaction (Original function kept for completeness) ---
+
+        async function fetchNews() {
+            const newsFeed = document.getElementById('news-feed');
+            
+            newsFeed.innerHTML = ''; // Clear old news
+            
+            // Show loading state
+            const loadingHtml = `
+                <div class="flex items-center justify-center p-8 space-x-2 text-indigo-600" id="news-loading">
+                    <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Fetching latest headlines...</span>
+                </div>
+            `;
+            newsFeed.innerHTML = loadingHtml;
+
+            const mockApiUrl = 'https://jsonplaceholder.typicode.com/posts/1'; 
+
+            try {
+                // Mocking API delay and success by fetching a small resource and then using static data
+                await fetchWithBackoff(mockApiUrl, { method: 'GET' }); 
+                const newsArticles = mockNewsData.articles;
+                
+                // Clear the loading indicator
+                newsFeed.innerHTML = ''; 
+
+                if (newsArticles.length === 0) {
+                    newsFeed.innerHTML = '<p class="text-gray-500 text-center py-8">No news found at this moment.</p>';
+                    return;
+                }
+
+                // Render the news articles
+                newsArticles.forEach(article => {
+                    const articleElement = document.createElement('a');
+                    articleElement.href = article.url;
+                    articleElement.target = '_blank';
+                    articleElement.className = 'block p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition duration-150 group';
+                    
+                    const date = new Date(article.publishedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
+
+                    articleElement.innerHTML = `
+                        <h4 class="text-base font-semibold text-gray-800 group-hover:text-indigo-600 transition duration-150">${article.title}</h4>
+                        <p class="text-sm text-gray-600 mt-1">${article.description.substring(0, 100)}...</p>
+                        <div class="mt-2 flex justify-between text-xs text-gray-400">
+                            <span>Source: ${article.source}</span>
+                            <span>${date}</span>
+                        </div>
+                    `;
+                    newsFeed.appendChild(articleElement);
+                });
+
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                newsFeed.innerHTML = `
+                    <div class="bg-red-50 text-red-700 p-4 rounded-lg text-sm">
+                        Could not connect to the news service. Please check the API configuration in a real implementation. <br/>
+                        Showing mock data structure.
+                    </div>
+                `;
+            }
+        }
+        
+        // --- Initialization and Event Listeners ---
+        
+        window.addEventListener('load', async () => {
+            // 1. Initialize Firebase and Auth
+            await initializeFirebase();
+            
+            // 2. Fetch News
+            document.getElementById('refreshNewsButton').addEventListener('click', fetchNews);
+            fetchNews(); 
+            
+            // 3. Attach Form Submit Listeners
+            document.getElementById('urlForm').addEventListener('submit', handleUrlSubmit);
+            document.getElementById('textForm').addEventListener('submit', handleTextSubmit);
+        });
+
+    </script>
+
+</body>
+</html>
