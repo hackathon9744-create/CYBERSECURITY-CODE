@@ -1,153 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<header class="fixed top-0 left-0 w-full z-50 backdrop-blur-xl 
-    bg-gradient-to-r from-[#0d1224]/90 via-[#141b33]/90 to-[#0d1224]/90
-    border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.45)]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggregator Dashboard</title>
 
-    <nav class="px-6 py-3 flex items-center justify-between max-w-[1300px] mx-auto">
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-        <!-- LEFT: Logo -->
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 
-                        flex items-center justify-center shadow-lg text-lg">
-                ⚡
-            </div>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
-            <span class="text-lg font-semibold tracking-wide text-white/90">
-                CyberSec Intelligence
-            </span>
-        </div>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172b;
+            background-image: radial-gradient(at 0% 0%, rgba(37, 150, 190, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
 
-        <!-- CENTER NAV LINKS -->
-        <div class="hidden md:flex items-center gap-10 text-white/80 text-sm font-medium">
-            <a href="index.html" class="hover:text-white transition">Home</a>
-            <a href="about-1.html" class="hover:text-white transition">About</a>
-            <a href="contact.html" class="hover:text-white transition">Contact</a>
-        </div>
+        /* Tooltip styling */
+        .tooltip {
+            @apply absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
+                   text-[10px] bg-black/70 px-2 py-1 rounded-md transition-all text-white;
+        }
 
-        <!-- RIGHT PROFILE -->
-        <div class="relative group cursor-pointer">
-            <img src="https://i.ibb.co/7WymQ44/user.png"
-                class="w-9 h-9 rounded-full border border-white/20 shadow-md hover:scale-105 transition"/>
+        /* Dropdown menus */
+        .dropdown-profile {
+            @apply absolute hidden group-hover:block right-0 mt-3 w-48 p-2 rounded-xl 
+                   backdrop-blur-2xl bg-[#0f1628]/80 border border-white/10 shadow-xl;
+        }
 
-            <div class="dropdown-profile absolute hidden group-hover:block right-0 mt-3 w-48 p-2 rounded-xl 
-                backdrop-blur-2xl bg-[#0f1628]/90 border border-white/10 shadow-xl">
-                <a class="block px-3 py-2 rounded-lg text-gray-200 hover:bg-white/10 transition">Profile</a>
-                <a class="block px-3 py-2 rounded-lg text-gray-200 hover:bg-white/10 transition">Settings</a>
-                <a class="block px-3 py-2 rounded-lg text-red-400 hover:bg-white/10 transition">Logout</a>
-            </div>
-        </div>
+        .dropdown-profile a {
+            @apply block px-3 py-2 rounded-lg text-gray-200 hover:bg-white/10 transition;
+        }
 
-        <!-- MOBILE MENU BUTTON -->
-        <button id="mobileMenuBtn" class="md:hidden text-3xl text-gray-200">☰</button>
-    </nav>
-
-    <!-- MOBILE MENU -->
-    <div id="mobileMenu" class="hidden md:hidden p-4 border-t border-white/10 
-        bg-[#0c1120]/95 backdrop-blur-xl text-gray-200">
-        <a class="block py-3 hover:text-indigo-400">Home</a>
-        <a class="block py-3 hover:text-indigo-400">About</a>
-        <a class="block py-3 hover:text-indigo-400">Contact</a>
-    </div>
-
-</header>
+        /* Mobile links */
+        .mobile-link {
+            @apply block py-3 text-gray-200 hover:text-indigo-400 transition;
+        }
+    </style>
+</head>
 
 <body class="min-h-screen text-gray-100">
- <header class="fixed top-0 left-0 w-full z-50 
-    backdrop-blur-xl bg-white/10 border-b border-white/20 
-    shadow-[0_4px_30px_rgba(0,0,0,0.4)]
-    bg-[url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=60')] 
-    bg-cover bg-center bg-no-repeat">
 
-    <nav class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+    <!-- FULL WIDTH GLASS NAV -->
+    <header class="fixed top-0 left-0 w-full z-50 
+        bg-gradient-to-r from-[#1d1f33]/60 via-[#121428]/60 to-[#1d1f33]/60
+        backdrop-blur-xl border-b border-white/10 shadow-lg">
 
-        <!-- LEFT: Logo -->
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-600 to-fuchsia-600 
-                        flex items-center justify-center shadow-md text-lg">
-                ⚡
+        <nav class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+
+            <!-- LEFT: Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-600 
+                            flex items-center justify-center text-xl shadow-md shadow-indigo-600/30">
+                    ⚡
+                </div>
+
+                <span class="text-lg font-semibold tracking-wide text-white/90">
+                    CyberSec Intelligence
+                </span>
             </div>
 
-            <span class="text-lg font-semibold tracking-wide text-white drop-shadow">
-                CyberSec Intelligence
-            </span>
-        </div>
+            <!-- CENTER Nav -->
+            <div class="hidden md:flex items-center gap-10 text-gray-200">
 
-        <!-- CENTER NAVIGATION -->
-        <div class="hidden md:flex items-center gap-8 text-white text-base font-medium">
+                <a href="index.html" class="hover:text-indigo-400 transition">Home</a>
+                <a href="about-1.html" class="hover:text-indigo-400 transition">About</a>
+                <a href="contact.html" class="hover:text-indigo-400 transition">Contact</a>
 
-            <a href="index.html" class="hover:text-indigo-300 transition">Home</a>
-            <a href="about-1.html" class="hover:text-indigo-300 transition">About</a>
-            <a href="contact.html" class="hover:text-indigo-300 transition">Contact</a>
-
-        </div>
-
-        <!-- RIGHT: Profile -->
-        <div class="relative group cursor-pointer">
-            <img src="https://i.ibb.co/7WymQ44/user.png"
-                class="w-9 h-9 rounded-full border border-white/20 
-                       shadow hover:scale-105 transition"/>
-
-            <div class="absolute hidden group-hover:block right-0 mt-3 w-48 p-2 rounded-xl 
-                        backdrop-blur-2xl bg-black/40 border border-white/10 shadow-xl">
-
-                <a class="block px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 transition">Profile</a>
-                <a class="block px-3 py-2 rounded-lg text-white/90 hover:bg-white/10 transition">Settings</a>
-                <a class="block px-3 py-2 rounded-lg text-red-400 hover:bg-white/10 transition">Logout</a>
             </div>
+
+            <!-- RIGHT: Profile -->
+            <div class="relative group cursor-pointer">
+                <img src="https://i.ibb.co/7WymQ44/user.png"
+                    class="w-9 h-9 rounded-full border border-white/20 shadow-md hover:scale-105 transition" />
+
+                <div class="dropdown-profile">
+                    <a>Profile</a>
+                    <a>Settings</a>
+                    <a class="text-red-400">Logout</a>
+                </div>
+            </div>
+
+            <!-- Mobile Button -->
+            <button id="mobileMenuBtn" class="md:hidden text-3xl text-gray-200">☰</button>
+        </nav>
+
+        <!-- MOBILE NAV -->
+        <div id="mobileMenu" class="hidden md:hidden px-6 pb-4 border-t border-white/10 
+                                  bg-[#0f1628]/90 backdrop-blur-xl">
+            <a class="mobile-link" href="index.html">Home</a>
+            <a class="mobile-link" href="about-1.html">About</a>
+            <a class="mobile-link" href="contact.html">Contact</a>
         </div>
-
-        <!-- MOBILE BUTTON -->
-        <button id="mobileMenuBtn" class="md:hidden text-3xl text-white">☰</button>
-    </nav>
-
-    <!-- MOBILE MENU -->
-    <div id="mobileMenu" class="hidden md:hidden bg-black/60 backdrop-blur-xl p-5 border-t border-white/10">
-        <a class="block py-3 text-white hover:text-indigo-300 transition">Home</a>
-        <a class="block py-3 text-white hover:text-indigo-300 transition">About</a>
-        <a class="block py-3 text-white hover:text-indigo-300 transition">Contact</a>
-    </div>
-</header>
-
-
-
-
-<style>
-/* Tooltip for icons */
-.tooltip {
-    @apply absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 
-           text-[10px] bg-black/70 px-2 py-1 rounded-md transition-all text-white;
-}
-
-/* Dropdown menus */
-.dropdown {
-    @apply absolute hidden group-hover:block right-0 mt-3 w-56 p-2 rounded-xl 
-           backdrop-blur-2xl bg-[#0f1628]/80 border border-white/10 shadow-xl;
-}
-.dropdown a {
-    @apply block px-3 py-2 rounded-lg text-gray-200 hover:bg-white/10 transition;
-}
-
-/* Profile dropdown */
-.dropdown-profile {
-    @apply absolute hidden group-hover:block right-0 mt-3 w-48 p-2 rounded-xl 
-           backdrop-blur-2xl bg-[#0f1628]/80 border border-white/10 shadow-xl;
-}
-.dropdown-profile a {
-    @apply block px-3 py-2 rounded-lg text-gray-200 hover:bg-white/10 transition;
-}
-
-/* Mobile links */
-.mobile-link {
-    @apply block py-3 text-gray-200 hover:text-indigo-400 transition;
-}
-</style>
-
-    <script>
-        document.getElementById("mobileMenuBtn").onclick = () =>
-            document.getElementById("mobileMenu").classList.toggle("hidden");
-    </script>
+    </header>
 
 
     <script>
@@ -155,8 +104,8 @@
             document.getElementById("mobileMenu").classList.toggle("hidden");
     </script>
 
-
-  <main class="container mx-auto px-4 pt-28 pb-8">
+    <!-- ADD PADDING SO NAV DOES NOT OVERLAP -->
+    <main class="container mx-auto px-4 pt-28 pb-10">
 
         <div class="flex flex-col gap-10">
 
@@ -166,7 +115,8 @@
 
                 <form id="urlForm">
                     <input id="urlInput" type="url" placeholder="https://example.com"
-                        class="w-full px-4 py-2 bg-slate-900/50 border border-white/20 rounded-lg text-white placeholder-gray-500">
+                        class="w-full px-4 py-2 bg-slate-900/50 border border-white/20 rounded-lg
+                               text-white placeholder-gray-500">
 
                     <button class="mt-4 w-full bg-red-600 hover:bg-red-500 py-2 rounded-lg text-white">
                         Check for Fraud
@@ -180,7 +130,8 @@
 
                 <form id="textForm">
                     <textarea id="textInput" rows="6" placeholder="Paste text..."
-                        class="w-full px-4 py-2 bg-slate-900/50 border border-white/20 rounded-lg text-white placeholder-gray-500"></textarea>
+                        class="w-full px-4 py-2 bg-slate-900/50 border border-white/20 rounded-lg 
+                               text-white placeholder-gray-500"></textarea>
 
                     <button class="mt-4 w-full bg-teal-600 hover:bg-teal-500 py-2 rounded-lg text-white">
                         Analyze Text
@@ -188,7 +139,6 @@
                 </form>
             </section>
 
-            <!-- Result Box -->
             <div id="messageBox" class="hidden p-4 rounded-lg border backdrop-blur-md"></div>
 
         </div>
@@ -263,19 +213,8 @@
 
         document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
         document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
-
-        document.getElementById("menu-btn").onclick = () =>
-            document.getElementById("menu-dropdown").classList.toggle("hidden");
-
     </script>
 
 </body>
 
 </html>
-
-
-
-
-
-
-
