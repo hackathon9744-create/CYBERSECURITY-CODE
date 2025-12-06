@@ -9,29 +9,15 @@
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0f172b;
-            background-image: radial-gradient(circle at 20% 20%, rgba(37, 150, 190, 0.15) 0px, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(79, 70, 229, 0.15) 0px, transparent 50%);
-            background-size: 200% 200%;
-            animation: gradientMove 30s ease infinite;
-        }
-
-        @keyframes gradientMove {
-            0% {
-                background-position: 0% 0%, 100% 100%;
-            }
-            50% {
-                background-position: 100% 0%, 0% 100%;
-            }
-            100% {
-                background-position: 0% 0%, 100% 100%;
-            }
+            background-image: radial-gradient(at 0% 0%, rgba(37, 150, 190, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
         }
 
         .fade-in-up {
@@ -47,53 +33,113 @@
             }
         }
 
-        /* Mobile link styling */
-        .mobile-link {
-            @apply block py-3 text-gray-200 hover:text-indigo-400 transition;
+        /* Navbar styles */
+        nav {
+            background: linear-gradient(90deg, #1e3a8a, #6d28d9);
+        }
+
+        nav a {
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            transform: scale(1.05);
+        }
+
+        /* Tooltip for icon (not used now but kept for future) */
+        .tooltip {
+            @apply absolute left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 text-[10px] bg-black/70 px-2 py-1 rounded-md transition-all text-white;
+        }
+
+        /* Result boxes */
+        .result-box {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            backdrop-blur: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Footer */
+        footer a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Subtle animated background circles */
+        .animated-bg span {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: float 20s linear infinite;
+            background: #8b5cf6;
+        }
+
+        .animated-bg span:nth-child(2) {
+            background: #2563eb;
+            width: 120px;
+            height: 120px;
+            animation-duration: 25s;
+            left: 60%;
+        }
+
+        .animated-bg span:nth-child(3) {
+            background: #14b8a6;
+            width: 80px;
+            height: 80px;
+            animation-duration: 22s;
+            top: 70%;
+            left: 20%;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+
+            50% {
+                transform: translateY(-50px) translateX(30px);
+            }
+
+            100% {
+                transform: translateY(0) translateX(0);
+            }
         }
     </style>
 </head>
 
-<body class="min-h-screen text-gray-100">
+<body class="min-h-screen text-gray-100 relative overflow-x-hidden">
 
-    <!-- NAVBAR: Full width + gradient background -->
+    <!-- Subtle animated background -->
+    <div class="animated-bg">
+        <span style="width:150px;height:150px;top:10%;left:15%;"></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Navbar -->
     <header class="fixed top-0 left-0 w-full z-50 shadow-lg">
-        <nav class="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 text-white">
-            <!-- Title -->
-            <span class="text-2xl font-semibold">CyberSec Intelligence</span>
-
-            <!-- Links -->
-            <div class="hidden md:flex space-x-8 font-medium">
-                <a href="#url-check" class="hover:text-yellow-300 transition">URL Check</a>
-                <a href="#text-check" class="hover:text-yellow-300 transition">Text Check</a>
-                <a href="#recent-attacks" class="hover:text-yellow-300 transition">Recent Attacks</a>
-                <a href="#prevention" class="hover:text-yellow-300 transition">Prevention</a>
-                <a href="#scam-patterns" class="hover:text-yellow-300 transition">Scam Patterns</a>
+        <nav class="flex justify-between items-center px-8 py-4">
+            <div class="text-white text-2xl font-bold">CyberSec Intelligence</div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#url-check" class="text-white hover:text-teal-400">URL Check</a>
+                <a href="#text-check" class="text-white hover:text-teal-400">Text Analysis</a>
+                <a href="#recent-attacks" class="text-white hover:text-teal-400">Recent Attacks</a>
+                <a href="#prevention" class="text-white hover:text-teal-400">Prevention</a>
             </div>
-
-            <!-- Mobile button -->
-            <button id="mobileMenuBtn" class="md:hidden text-3xl">☰</button>
         </nav>
-
-        <!-- Mobile Drawer -->
-        <div id="mobileMenu" class="hidden md:hidden bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 p-4 space-y-2">
-            <a class="mobile-link" href="#url-check">URL Check</a>
-            <a class="mobile-link" href="#text-check">Text Check</a>
-            <a class="mobile-link" href="#recent-attacks">Recent Attacks</a>
-            <a class="mobile-link" href="#prevention">Prevention</a>
-            <a class="mobile-link" href="#scam-patterns">Scam Patterns</a>
-        </div>
     </header>
 
-    <script>
-        document.getElementById("mobileMenuBtn").onclick = () =>
-            document.getElementById("mobileMenu").classList.toggle("hidden");
-    </script>
-
-    <main class="pt-24">
+    <main class="pt-28 px-4 md:px-16">
 
         <!-- URL Fraud Check -->
-        <section id="url-check" class="container mx-auto px-4 py-8 fade-in-up">
+        <section id="url-check" class="fade-in-up mb-10">
             <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
                 <h2 class="text-xl font-semibold text-yellow-400 mb-3">Check URLs for Fraud</h2>
                 <form id="urlForm">
@@ -102,11 +148,12 @@
                     <button
                         class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Check</button>
                 </form>
+                <div id="urlResult" class="result-box"></div>
             </div>
         </section>
 
         <!-- Text Scam Detection -->
-        <section id="text-check" class="container mx-auto px-4 py-8 fade-in-up">
+        <section id="text-check" class="fade-in-up mb-10">
             <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
                 <h2 class="text-xl font-semibold text-teal-400 mb-3">Text / Scam Detection</h2>
                 <form id="textForm">
@@ -115,84 +162,113 @@
                     <button
                         class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Analyze</button>
                 </form>
+                <div id="textResult" class="result-box"></div>
             </div>
         </section>
 
-        <div id="messageBox" class="hidden p-4 rounded-lg border backdrop-blur-md container mx-auto px-4"></div>
-
         <!-- Recent Cyber Attacks -->
-        <section id="recent-attacks" class="container mx-auto px-4 py-12 fade-in-up">
-            <h2 class="text-2xl font-bold text-yellow-400 mb-6 text-center">Recent Cyber Attacks</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="bg-white/10 border border-white/20 rounded-xl p-4 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="font-semibold text-lg text-red-400">Colonial Pipeline</h3>
-                    <p class="text-gray-300 mt-2">May 2021 – Ransomware attack disrupted fuel supply in the US.</p>
-                </div>
-                <div class="bg-white/10 border border-white/20 rounded-xl p-4 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="font-semibold text-lg text-red-400">Log4j Vulnerability</h3>
-                    <p class="text-gray-300 mt-2">2021-2022 – Critical vulnerability affecting millions of servers worldwide.</p>
-                </div>
-                <div class="bg-white/10 border border-white/20 rounded-xl p-4 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="font-semibold text-lg text-red-400">Bank Phishing Campaign</h3>
-                    <p class="text-gray-300 mt-2">Recent – Large-scale phishing attacks targeting banking users.</p>
-                </div>
+        <section id="recent-attacks" class="fade-in-up mb-10">
+            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
+                <h2 class="text-xl font-semibold text-red-400 mb-3">Recent Cyber Attacks</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>SolarWinds supply chain attack – 2020</li>
+                    <li>Colonial Pipeline ransomware attack – 2021</li>
+                    <li>Facebook data breach exposing 533 million accounts – 2019</li>
+                    <li>JBS meat supplier ransomware attack – 2021</li>
+                </ul>
             </div>
         </section>
 
         <!-- Prevention Steps -->
-        <section id="prevention" class="container mx-auto px-4 py-12 fade-in-up">
-            <h2 class="text-2xl font-bold text-yellow-400 mb-6 text-center">Prevention Steps</h2>
-            <ul class="grid md:grid-cols-2 gap-6">
-                <li class="bg-white/10 border border-white/20 rounded-xl p-6 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="text-lg font-semibold text-teal-400">Enable Two-Factor Authentication</h3>
-                    <p class="text-gray-300 mt-2">Add an extra layer of security to your accounts.</p>
-                </li>
-                <li class="bg-white/10 border border-white/20 rounded-xl p-6 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="text-lg font-semibold text-teal-400">Use Strong Passwords</h3>
-                    <p class="text-gray-300 mt-2">Never reuse passwords and consider a password manager.</p>
-                </li>
-                <li class="bg-white/10 border border-white/20 rounded-xl p-6 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="text-lg font-semibold text-teal-400">Avoid Suspicious Links</h3>
-                    <p class="text-gray-300 mt-2">Do not click on unknown links or attachments.</p>
-                </li>
-                <li class="bg-white/10 border border-white/20 rounded-xl p-6 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="text-lg font-semibold text-teal-400">Keep Software Updated</h3>
-                    <p class="text-gray-300 mt-2">Install security updates regularly.</p>
-                </li>
-            </ul>
-        </section>
-
-        <!-- Scam Patterns -->
-        <section id="scam-patterns" class="container mx-auto px-4 py-12 fade-in-up">
-            <h2 class="text-2xl font-bold text-yellow-400 mb-6 text-center">Common Scam Patterns</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="bg-white/10 border border-white/20 rounded-xl p-4 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="font-semibold text-lg text-red-400">Urgent Payment Requests</h3>
-                    <p class="text-gray-300 mt-2">Emails asking for immediate payment to trick users.</p>
-                </div>
-                <div class="bg-white/10 border border-white/20 rounded-xl p-4 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="font-semibold text-lg text-red-400">Fake Tech Support</h3>
-                    <p class="text-gray-300 mt-2">Scammers claiming system errors and asking for access or payment.</p>
-                </div>
-                <div class="bg-white/10 border border-white/20 rounded-xl p-4 shadow-lg backdrop-blur-md hover:scale-105 transition">
-                    <h3 class="font-semibold text-lg text-red-400">Lottery / Gift Scams</h3>
-                    <p class="text-gray-300 mt-2">Promises of gifts or prizes in exchange for personal info or fees.</p>
-                </div>
+        <section id="prevention" class="fade-in-up mb-10">
+            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md">
+                <h2 class="text-xl font-semibold text-green-400 mb-3">Steps for Prevention</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>Keep all software and systems updated.</li>
+                    <li>Use strong, unique passwords and enable 2FA.</li>
+                    <li>Be cautious with email links and attachments.</li>
+                    <li>Regularly backup critical data offline.</li>
+                    <li>Implement security awareness training.</li>
+                </ul>
             </div>
         </section>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 mt-16 text-white">
-        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center">
-            <p>© 2025 CyberSec Intelligence. All rights reserved.</p>
-            <div class="flex space-x-4 mt-4 md:mt-0">
-                <a href="#" class="hover:text-yellow-300 transition">Privacy Policy</a>
-                <a href="#" class="hover:text-yellow-300 transition">Terms of Service</a>
-                <a href="#" class="hover:text-yellow-300 transition">Contact</a>
+    <!-- Footer -->
+    <footer class="mt-16 bg-gradient-to-r from-indigo-800 to-purple-700 text-white py-6 px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <p>&copy; 2025 CyberSec Intelligence. All rights reserved.</p>
+            <div class="space-x-4 mt-2 md:mt-0">
+                <a href="#" target="_blank">Twitter</a>
+                <a href="#" target="_blank">LinkedIn</a>
+                <a href="#" target="_blank">GitHub</a>
             </div>
         </div>
     </footer>
 
+    <!-- Backend JS -->
+    <script>
+        const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
+
+        async function handleUrlSubmit(e) {
+            e.preventDefault();
+            const url = document.getElementById("urlInput").value;
+            const box = document.getElementById("urlResult");
+
+            box.style.display = "block";
+            box.textContent = "🔍 Checking URL...";
+
+            try {
+                const r = await fetch(BACKEND_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: url, use_openai: true })
+                });
+                const out = await r.json();
+
+                box.className = "result-box block " +
+                    (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
+                        out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
+                            "bg-teal-500/20 text-teal-300 border-teal-500/40");
+
+                box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
+            } catch {
+                box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
+                box.textContent = "❌ Backend unreachable.";
+            }
+        }
+
+        async function handleTextSubmit(e) {
+            e.preventDefault();
+            const text = document.getElementById("textInput").value;
+            const box = document.getElementById("textResult");
+
+            box.style.display = "block";
+            box.textContent = "🔍 Analyzing text...";
+
+            try {
+                const r = await fetch(BACKEND_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: text, use_openai: true })
+                });
+                const out = await r.json();
+
+                box.className = "result-box block " +
+                    (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
+                        out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
+                            "bg-teal-500/20 text-teal-300 border-teal-500/40");
+
+                box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
+            } catch {
+                box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
+                box.textContent = "❌ Backend unreachable.";
+            }
+        }
+
+        document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
+        document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
+    </script>
 </body>
+
 </html>
