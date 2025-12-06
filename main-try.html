@@ -119,100 +119,80 @@
 <!-- ************************
      JAVASCRIPT SECTION (BACKEND INTEGRATION + FIREBASE + UI)
 ************************* -->
-<script type="module">
+<script>
+const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
 
-    /* ===============================
-       BACKEND URL
-    =================================*/
-    const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
+function showMessage(type, message) {
+    const box = document.getElementById("messageBox");
+    box.className = "p-4 rounded-xl backdrop-blur-md border";
 
+    if (type === "success") box.classList.add("bg-green-500/20","text-green-200","border-green-500/30");
+    if (type === "error") box.classList.add("bg-red-500/20","text-red-200","border-red-500/30");
+    if (type === "warn") box.classList.add("bg-yellow-500/20","text-yellow-200","border-yellow-500/30");
+    if (type === "info") box.classList.add("bg-blue-500/20","text-blue-200","border-blue-500/30");
 
-    /* ===============================
-       SHOW MESSAGE UI FUNCTION
-    =================================*/
-    function showMessage(type, message) {
-        const box = document.getElementById("messageBox");
-        box.className = "p-4 rounded-xl backdrop-blur-md border";
+    box.innerText = message;
+    box.classList.remove("hidden");
+}
 
-        if (type === "success") box.classList.add("bg-green-500/20","text-green-200","border-green-500/30");
-        if (type === "error") box.classList.add("bg-red-500/20","text-red-200","border-red-500/30");
-        if (type === "warn") box.classList.add("bg-yellow-500/20","text-yellow-200","border-yellow-500/30");
-        if (type === "info") box.classList.add("bg-blue-500/20","text-blue-200","border-blue-500/30");
+async function handleUrlSubmit(event) {
+    event.preventDefault();
+    const url = document.getElementById("urlInput").value;
 
-        box.innerText = message;
-        box.classList.remove("hidden");
+    showMessage("info", "🔍 Analyzing URL...");
+
+    try {
+        const response = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: url, use_openai: true })
+        });
+
+        const result = await response.json();
+
+        showMessage(
+            result.final_risk === "High" ? "error" :
+            result.final_risk === "Medium" ? "warn" :
+            "success",
+            `Risk: ${result.final_risk}\nScam Type: ${result.scam_type}\n\n${result.explanation.join(" ")}`
+        );
+
+    } catch (err) {
+        showMessage("error", "❌ Backend not reachable.");
     }
+}
 
+async function handleTextSubmit(event) {
+    event.preventDefault();
+    const text = document.getElementById("textInput").value;
 
-    /* ===============================
-       URL SUBMIT HANDLER
-    =================================*/
-    async function handleUrlSubmit(event) {
-        event.preventDefault();
-        const url = document.getElementById("urlInput").value;
+    showMessage("info", "🔍 Analyzing text...");
 
-        showMessage("info", "🔍 Analyzing URL...");
+    try {
+        const response = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: text, use_openai: true })
+        });
 
-        try {
-            const response = await fetch(BACKEND_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: url, use_openai: true })
-            });
+        const result = await response.json();
 
-            const result = await response.json();
-            console.log("URL Result:", result);
+        showMessage(
+            result.final_risk === "High" ? "error" :
+            result.final_risk === "Medium" ? "warn" :
+            "success",
+            `Risk: ${result.final_risk}\nScam Type: ${result.scam_type}\n\n${result.explanation.join(" ")}`
+        );
 
-            showMessage(
-                result.final_risk === "High" ? "error" :
-                result.final_risk === "Medium" ? "warn" :
-                "success",
-                Risk: ${result.final_risk}\nScam Type: ${result.scam_type}\n\n${result.explanation.join(" ")}
-            );
-
-        } catch (err) {
-            showMessage("error", "❌ Backend not reachable.");
-            console.error(err);
-        }
+    } catch (err) {
+        showMessage("error", "❌ Backend not reachable.");
     }
+}
 
-
-    /* ===============================
-       TEXT SUBMIT HANDLER
-    =================================*/
-    async function handleTextSubmit(event) {
-        event.preventDefault();
-        const text = document.getElementById("textInput").value;
-
-        showMessage("info", "🔍 Analyzing text...");
-
-        try {
-            const response = await fetch(BACKEND_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: text, use_openai: true })
-            });
-
-            const result = await response.json();
-            console.log("TEXT Result:", result);
-
-            showMessage(
-                result.final_risk === "High" ? "error" :
-                result.final_risk === "Medium" ? "warn" :
-                "success",
-                Risk: ${result.final_risk}\nScam Type: ${result.scam_type}\n\n${result.explanation.join(" ")}
-            );
-
-        } catch (err) {
-            showMessage("error", "❌ Backend not reachable.");
-            console.error(err);
-        }
-    }
-
-    document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
-    document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
-
+document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
+document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
 </script>
 
 </body>
 </html>
+
