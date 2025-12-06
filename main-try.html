@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aggregator Dashboard</title>
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -28,171 +28,137 @@
         @keyframes fadeInUp {
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .delay-100 { animation-delay: .1s }
-        .delay-200 { animation-delay: .2s }
-        .delay-300 { animation-delay: .3s }
     </style>
 </head>
 
 <body class="min-h-screen text-gray-100">
 
-<header class="bg-indigo-900/80 backdrop-blur-md text-white shadow-lg p-4 sticky top-0 z-10 border-b border-white/10">
+<header class="bg-indigo-900/80 backdrop-blur-md p-4 sticky top-0 border-b border-white/10">
     <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold tracking-tight">Data Aggregation Hub</h1>
+        <h1 class="text-2xl font-bold">Data Aggregation Hub</h1>
 
-        <div class="flex items-center gap-6">
-            <span class="text-sm opacity-80 hidden sm:block border-r border-indigo-500/50 pr-6">Analyze & Stay Updated</span>
-
-            <div class="relative">
-                <button id="menu-btn" class="flex items-center gap-1 hover:text-indigo-200 font-medium transition">
-                    <span>Menu</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-
-                <div id="menu-dropdown"
-                     class="hidden absolute right-0 mt-2 w-48 bg-indigo-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-2 z-20">
-                    <a href="index.html" class="block px-4 py-2 text-sm font-bold hover:bg-white/10">Home</a>
-                    <a href="about.html" class="block px-4 py-2 text-sm font-bold hover:bg-white/10">About</a>
-                    <a href="contact.html" class="block px-4 py-2 text-sm font-bold hover:bg-white/10">Contact</a>
-                </div>
+        <div class="relative">
+            <button id="menu-btn" class="hover:text-indigo-300">Menu ▼</button>
+            <div id="menu-dropdown" class="hidden absolute right-0 bg-indigo-900/90 backdrop-blur-md w-40 p-2 rounded-lg border border-white/10">
+                <a href="index.html" class="block px-3 py-2 hover:bg-indigo-700/50 rounded">Home</a>
+                <a href="about-1.html" class="block px-3 py-2 hover:bg-indigo-700/50 rounded">About</a>
+                <a href="contact.html" class="block px-3 py-2 hover:bg-indigo-700/50 rounded">Contact</a>
             </div>
         </div>
     </div>
 </header>
 
-
 <main class="container mx-auto px-4 py-8">
-    <div class="flex flex-col gap-12">
+    <div class="flex flex-col gap-10">
 
-        <!-- ==============================
-             URL ANALYZER
-        ================================ -->
-        <section class="w-full space-y-8">
-            <h2 class="text-3xl font-semibold border-b border-white/10 pb-2 fade-in-up">Analysis Tools</h2>
+        <!-- URL Fraud Check -->
+        <section class="bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg">
+            <h2 class="text-xl font-semibold text-red-400 mb-3">URL Fraud Check</h2>
 
-            <!-- URL Checker -->
-            <div class="bg-white/5 p-6 rounded-xl border border-white/10 shadow-xl fade-in-up delay-100">
-                <h3 class="text-xl font-medium text-red-400 mb-4 flex items-center">
-                    <svg class="w-6 h-6 mr-2 text-red-400" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.06 20h13.88c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 17c-.77 1.33.19 3 1.72 3z"/></svg>
-                    URL Fraud Check
-                </h3>
+            <form id="urlForm">
+                <input id="urlInput" type="url" placeholder="https://example.com"
+                    class="w-full px-4 py-2 bg-slate-900/50 border border-white/20 rounded-lg text-white placeholder-gray-500">
 
-                <form id="urlForm">
-                    <input type="url" id="urlInput" required
-                           placeholder="e.g., https://secure-payments.com/verify"
-                           class="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500/50">
-
-                    <button class="mt-4 w-full bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg transition border border-red-500/30">
-                        Check for Fraud
-                    </button>
-                </form>
-            </div>
-
-            <!-- TEXT CHECKER -->
-            <div class="bg-white/5 p-6 rounded-xl border border-white/10 shadow-xl fade-in-up delay-200">
-                <h3 class="text-xl font-medium text-teal-400 mb-4 flex items-center">
-                    <svg class="w-6 h-6 mr-2 text-teal-400" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1v-3m-6 0h6m-5 0v-1a1 1 0 011-1h2a1 1 0 011 1v1m-3 0a3 3 0 00-3 3v3a3 3 0 003 3h6a3 3 0 003-3v-3a3 3 0 00-3-3h-6z"/></svg>
-                    Scam / AI Detection
-                </h3>
-
-                <form id="textForm">
-                    <textarea id="textInput" rows="6" required
-                              placeholder="Paste text message here..."
-                              class="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-teal-500/50"></textarea>
-
-                    <button class="mt-4 w-full bg-teal-600 hover:bg-teal-500 text-white py-2 px-4 rounded-lg transition border border-teal-500/30">
-                        Analyze Text
-                    </button>
-                </form>
-            </div>
-
-            <!-- RESULT BOX -->
-            <div id="messageBox"
-                 class="hidden p-4 rounded-xl backdrop-blur-md border transition"></div>
-
+                <button class="mt-4 w-full bg-red-600 hover:bg-red-500 py-2 rounded-lg text-white">
+                    Check for Fraud
+                </button>
+            </form>
         </section>
+
+        <!-- Text Scam Detection -->
+        <section class="bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg">
+            <h2 class="text-xl font-semibold text-teal-400 mb-3">Scam / AI Text Detection</h2>
+
+            <form id="textForm">
+                <textarea id="textInput" rows="6" placeholder="Paste text..." 
+                    class="w-full px-4 py-2 bg-slate-900/50 border border-white/20 rounded-lg text-white placeholder-gray-500"></textarea>
+
+                <button class="mt-4 w-full bg-teal-600 hover:bg-teal-500 py-2 rounded-lg text-white">
+                    Analyze Text
+                </button>
+            </form>
+        </section>
+
+        <!-- Result Box -->
+        <div id="messageBox" class="hidden p-4 rounded-lg border backdrop-blur-md"></div>
+
     </div>
 </main>
 
 
-<!-- ************************
-     JAVASCRIPT SECTION (BACKEND INTEGRATION + FIREBASE + UI)
-************************* -->
+<!-- BACKEND INTEGRATION SCRIPT -->
 <script>
 const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
 
 function showMessage(type, message) {
     const box = document.getElementById("messageBox");
-    box.className = "p-4 rounded-xl backdrop-blur-md border";
+    box.className = "p-4 rounded-lg border backdrop-blur-md block";
 
-    if (type === "success") box.classList.add("bg-green-500/20","text-green-200","border-green-500/30");
-    if (type === "error") box.classList.add("bg-red-500/20","text-red-200","border-red-500/30");
-    if (type === "warn") box.classList.add("bg-yellow-500/20","text-yellow-200","border-yellow-500/30");
-    if (type === "info") box.classList.add("bg-blue-500/20","text-blue-200","border-blue-500/30");
+    if (type === "error") box.classList.add("bg-red-500/20","text-red-300","border-red-500/40");
+    if (type === "warn") box.classList.add("bg-yellow-500/20","text-yellow-300","border-yellow-500/40");
+    if (type === "success") box.classList.add("bg-green-500/20","text-green-300","border-green-500/40");
+    if (type === "info") box.classList.add("bg-blue-500/20","text-blue-300","border-blue-500/40");
 
     box.innerText = message;
-    box.classList.remove("hidden");
 }
 
-async function handleUrlSubmit(event) {
-    event.preventDefault();
+async function handleUrlSubmit(e) {
+    e.preventDefault();
     const url = document.getElementById("urlInput").value;
 
-    showMessage("info", "🔍 Analyzing URL...");
+    showMessage("info", "🔍 Checking URL...");
 
     try {
-        const response = await fetch(BACKEND_URL, {
+        const r = await fetch(BACKEND_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: url, use_openai: true })
         });
 
-        const result = await response.json();
+        const out = await r.json();
 
         showMessage(
-            result.final_risk === "High" ? "error" :
-            result.final_risk === "Medium" ? "warn" :
-            "success",
-            `Risk: ${result.final_risk}\nScam Type: ${result.scam_type}\n\n${result.explanation.join(" ")}`
+            out.final_risk === "High" ? "error" :
+            out.final_risk === "Medium" ? "warn" : "success",
+            `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`
         );
-
-    } catch (err) {
-        showMessage("error", "❌ Backend not reachable.");
+    } catch {
+        showMessage("error", "❌ Backend unreachable.");
     }
 }
 
-async function handleTextSubmit(event) {
-    event.preventDefault();
+async function handleTextSubmit(e) {
+    e.preventDefault();
     const text = document.getElementById("textInput").value;
 
     showMessage("info", "🔍 Analyzing text...");
 
     try {
-        const response = await fetch(BACKEND_URL, {
+        const r = await fetch(BACKEND_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: text, use_openai: true })
         });
 
-        const result = await response.json();
+        const out = await r.json();
 
         showMessage(
-            result.final_risk === "High" ? "error" :
-            result.final_risk === "Medium" ? "warn" :
-            "success",
-            `Risk: ${result.final_risk}\nScam Type: ${result.scam_type}\n\n${result.explanation.join(" ")}`
+            out.final_risk === "High" ? "error" :
+            out.final_risk === "Medium" ? "warn" : "success",
+            `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`
         );
-
-    } catch (err) {
-        showMessage("error", "❌ Backend not reachable.");
+    } catch {
+        showMessage("error", "❌ Backend unreachable.");
     }
 }
 
 document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
 document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
+
+document.getElementById("menu-btn").onclick = () =>
+    document.getElementById("menu-dropdown").classList.toggle("hidden");
+
 </script>
 
 </body>
 </html>
-
