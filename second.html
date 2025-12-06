@@ -31,7 +31,24 @@
     <header class="bg-indigo-700 text-white shadow-lg p-4 sticky top-0 z-10">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Data Aggregation Hub</h1>
-            <span class="text-sm opacity-80 hidden sm:block">Analyze & Stay Updated</span>
+            <div class="flex items-center gap-6">
+                <span class="text-sm opacity-80 hidden sm:block border-r border-indigo-500 pr-6">Analyze & Stay Updated</span>
+                
+                <!-- Dropdown Menu -->
+                <div class="relative">
+                    <button id="menu-btn" class="flex items-center gap-1 text-white hover:text-indigo-200 font-medium transition-colors focus:outline-none">
+                        <span>Menu</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <!-- Dropdown Items -->
+                    <div id="menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-indigo-700 rounded-xl shadow-xl py-2 z-20 ring-1 ring-white ring-opacity-20 origin-top-right transition-transform transform">
+                        <a href="#" class="block px-4 py-2 text-sm font-bold text-white hover:bg-indigo-600 hover:text-indigo-100 transition-colors">Home</a>
+                        <a href="#" class="block px-4 py-2 text-sm font-bold text-white hover:bg-indigo-600 hover:text-indigo-100 transition-colors">About</a>
+                        <a href="#" class="block px-4 py-2 text-sm font-bold text-white hover:bg-indigo-600 hover:text-indigo-100 transition-colors">Contact</a>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </header>
 
@@ -208,7 +225,7 @@
                 try {
                     const response = await fetch(url, options);
                     if (!response.ok) {
-                        throw new Error(HTTP error! status: ${response.status});
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     return await response.json();
                 } catch (error) {
@@ -278,97 +295,34 @@
 
             try {
                 // Use private path: /artifacts/{appId}/users/{userId}/submissions
-                const submissionsRef = collection(db, artifacts/${appId}/users/${userId}/submissions);
+                const submissionsRef = collection(db, `artifacts/${appId}/users/${userId}/submissions`);
                 await addDoc(submissionsRef, logData);
-                console.log(Successfully logged ${type} submission.);
+                console.log(`Successfully logged ${type} submission.`);
             } catch (e) {
                 console.error("Error adding document: ", e);
             }
         }
         
-        // --- Analysis Simulation Logic ---
-
-        /**
-         * Simulates checking a URL against a fraud data sheet.
-         */
-        function checkUrlFraud(url) {
-            // Simulation: Check for patterns that might indicate risk
-            const isPhishing = url.includes('login') && !url.includes('google.com') ||
-                               url.includes('free-money') ||
-                               url.includes('badsite.xyz');
-            
-            let riskLevel;
-            let reason;
-
-            if (isPhishing) {
-                riskLevel = 'High Risk';
-                reason = 'Suspicious domain patterns detected. A high risk of fraud is flagged.';
-            } else if (url.startsWith('https://')) {
-                riskLevel = 'Safe';
-                reason = 'Uses HTTPS and passed basic security checks.';
-            } else {
-                riskLevel = 'Moderate Risk';
-                reason = 'No HTTPS detected. Proceed with caution.';
-            }
-
-            return { riskLevel, reason };
-        }
-
-        /**
-         * Simulates checking text for AI generation likelihood.
-         */
-        function checkTextAI(text) {
-            // Simulation: Long, perfectly structured text suggests AI
-            const perfectScore = text.length > 400 && text.split('. ').every(s => s.length > 20);
-            const isShort = text.length < 50;
-
-            let score; // 0.0 to 1.0
-            
-            if (perfectScore) {
-                score = (0.85 + Math.random() * 0.10); // 85-95%
-            } else if (isShort) {
-                score = (0.05 + Math.random() * 0.20); // 5-25%
-            } else {
-                score = (0.40 + Math.random() * 0.35); // 40-75%
-            }
-
-            const percentage = (score * 100).toFixed(1);
-            const isAIGenerated = score > 0.8;
-
-            return { percentage, isAIGenerated };
-        }
-
-
-        // --- Submission Handlers ---
+        // --- Submission Handlers (LOGIC REMOVED FOR CUSTOM ML) ---
 
         async function handleUrlSubmit(event) {
             event.preventDefault();
             const urlInput = document.getElementById('urlInput');
             const url = urlInput.value;
             
-            // 1. Run Mock Analysis
-            const analysis = checkUrlFraud(url);
-            
-            // 2. Format Message
-            let messageType;
-            let message;
-            
-            if (analysis.riskLevel === 'High Risk') {
-                messageType = 'error';
-                message = 🚨 HIGH RISK DETECTED: ${analysis.reason}. **DO NOT PROCEED.**;
-            } else if (analysis.riskLevel === 'Moderate Risk') {
-                messageType = 'warn';
-                message = ⚠ MODERATE RISK: ${analysis.reason}. Please review manually.;
-            } else {
-                messageType = 'success';
-                message = ✅ URL APPEARS SAFE: ${analysis.reason};
-            }
+            // ----------------------------------------------------
+            // TODO: INTEGRATE YOUR CUSTOM ML MODEL FOR URL FRAUD DETECTION HERE
+            // Example:
+            // const result = await myMLService.checkUrl(url);
+            // ----------------------------------------------------
 
-            // 3. Display Message
-            showMessage(messageType, message);
+            console.log("URL Submitted for analysis (ML Pending):", url);
+
+            // Placeholder Message
+            showMessage('info', 'ℹ️ Analysis Pending: Connect your ML model in the code to see results.');
             
-            // 4. Log to Firestore
-            await saveSubmissionLog('url', { url: url, result: analysis });
+            // Log to Firestore (Optional - keeps record of submission)
+            await saveSubmissionLog('url', { url: url, status: "pending_ml" });
 
             urlInput.value = ''; // Clear input
         }
@@ -378,29 +332,19 @@
             const textInput = document.getElementById('textInput');
             const text = textInput.value;
 
-            // 1. Run Mock Analysis
-            const analysis = checkTextAI(text);
-            
-            // 2. Format Message
-            let messageType;
-            let message;
+            // ----------------------------------------------------
+            // TODO: INTEGRATE YOUR CUSTOM ML MODEL FOR AI TEXT DETECTION HERE
+            // Example:
+            // const result = await myMLService.checkText(text);
+            // ----------------------------------------------------
 
-            if (analysis.isAIGenerated) {
-                messageType = 'error'; // Using error/red for a high-alert AI score
-                message = 🤖 AI DETECTED: This text has a **${analysis.percentage}%** chance of being AI generated.;
-            } else if (analysis.percentage > 40) {
-                messageType = 'warn';
-                message = ⚠ MODERATE AI SCORE: ${analysis.percentage}% chance of AI generation. Review for originality.;
-            } else {
-                messageType = 'success';
-                message = ✅ HUMAN LIKELY: ${analysis.percentage}% chance of AI generation. Text appears organic.;
-            }
+            console.log("Text Submitted for analysis (ML Pending)");
 
-            // 3. Display Message
-            showMessage(messageType, message);
+            // Placeholder Message
+            showMessage('info', 'ℹ️ Analysis Pending: Connect your ML model in the code to see results.');
 
-            // 4. Log to Firestore
-            await saveSubmissionLog('text', { textSnippet: text.substring(0, 100) + '...', fullLength: text.length, result: analysis });
+            // Log to Firestore (Optional - keeps record of submission)
+            await saveSubmissionLog('text', { textSnippet: text.substring(0, 50) + '...', status: "pending_ml" });
             
             textInput.value = ''; // Clear input
         }
@@ -483,6 +427,25 @@
             // 3. Attach Form Submit Listeners
             document.getElementById('urlForm').addEventListener('submit', handleUrlSubmit);
             document.getElementById('textForm').addEventListener('submit', handleTextSubmit);
+
+            // 4. Dropdown Menu Logic
+            const menuBtn = document.getElementById('menu-btn');
+            const menuDropdown = document.getElementById('menu-dropdown');
+
+            if (menuBtn && menuDropdown) {
+                // Toggle menu on click
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menuDropdown.classList.toggle('hidden');
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                        menuDropdown.classList.add('hidden');
+                    }
+                });
+            }
         });
 
     </script>
