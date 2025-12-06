@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+scikit-learn
+joblib
+pandas
+numpy
+gdown
+openai
+python-dotenv
+tldextract
+requests
