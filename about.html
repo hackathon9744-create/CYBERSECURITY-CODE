@@ -39,89 +39,6 @@
 </head>
 <body class="min-h-screen text-gray-100">
 
-<nav style="background:#222; padding:12px 20px; display:flex; gap:20px; align-items:center;">
-  <a href="firstpage.html" style="color:white; text-decoration:none; font-weight:bold;">Home</a>
-  <a href="main-try.html" style="color:white; text-decoration:none;">Dashboard</a>
-  <a href="frontend.html" style="color:white; text-decoration:none;">Scanner</a>
-  <a href="contact.html" style="color:white; text-decoration:none;">Contact</a>
-  <a href="about.html" style="color:white; text-decoration:none;">About</a>
-</nav>
-<!-- PhishGuard Scanner UI -->
-<div id="phishguard" style="max-width:900px;margin:24px auto;padding:18px;border-radius:10px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.05)">
-  <h2 style="margin:0 0 8px 0">PhishGuard — Message Scanner</h2>
-
-  <textarea id="pg_text" placeholder="Paste suspicious message here..." style="width:100%;height:160px;padding:10px;border:1px solid #e6e6e6;border-radius:8px;"></textarea>
-  <div style="margin-top:10px;">
-    <button id="pg_scan" style="padding:8px 14px;border-radius:8px;border:none;background:#107a8b;color:#fff;cursor:pointer">Scan</button>
-    <button id="pg_report" style="padding:8px 14px;margin-left:8px;border-radius:8px;border:none;background:#444;color:#fff;cursor:pointer">Report</button>
-    <button id="pg_clear" style="padding:8px 14px;margin-left:8px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer">Clear</button>
-  </div>
-
-  <div id="pg_result" style="display:none;margin-top:14px;padding:12px;border-radius:8px;border:1px solid #f0f0f0;background:#fdfdfd;">
-    <div id="pg_verdict" style="font-weight:700;margin-bottom:8px"></div>
-    <div id="pg_reasons"></div>
-    <pre id="pg_indicators" style="white-space:pre-wrap;margin-top:10px;background:#fff;padding:10px;border-radius:6px;border:1px solid #eee;"></pre>
-  </div>
-</div>
-
-<script>
-  const API = "http://localhost:8000"; // backend address
-
-  async function scanMessage() {
-    const text = document.getElementById('pg_text').value.trim();
-    if (!text) { alert("Paste the message text first."); return null; }
-
-    const res = await fetch(API + "/scan", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: text, reporter_name: "frontend-user" })
-    });
-
-    if (!res.ok) {
-      const t = await res.text();
-      alert("Server error: " + t);
-      return null;
-    }
-
-    const data = await res.json();
-    showResult(data);
-    return data;
-  }
-
-  function showResult(data) {
-    document.getElementById('pg_result').style.display = 'block';
-    const verdictColor = data.verdict === "fake" ? "#b00" : "#0a7";
-    document.getElementById('pg_verdict').innerHTML = `Verdict: <span style="color:${verdictColor}">${data.verdict.toUpperCase()}</span> — Score: ${data.score}`;
-    document.getElementById('pg_reasons').innerHTML = `<strong>Reasons:</strong><ul>${(data.reasons||[]).map(r=>`<li>${r}</li>`).join('')}</ul>`;
-    document.getElementById('pg_indicators').textContent = JSON.stringify(data.indicators || {}, null, 2);
-  }
-
-  document.getElementById('pg_scan').addEventListener('click', scanMessage);
-
-  document.getElementById('pg_report').addEventListener('click', async () => {
-    const scanRes = await scanMessage();
-    if (!scanRes) return;
-    const payload = { scan_result: scanRes, reporter_name: "frontend-user", notes: "Reported from UI" };
-    const r = await fetch(API + "/report", {
-      method: "POST",
-      headers: { "Content-Type":"application/json" },
-      body: JSON.stringify(payload)
-    });
-    if (r.ok) {
-      const j = await r.json();
-      alert("Report saved: id " + (j.report_id || JSON.stringify(j)));
-    } else {
-      alert("Failed to save report");
-    }
-  });
-
-  document.getElementById('pg_clear').addEventListener('click', () => {
-    document.getElementById('pg_text').value = "";
-    document.getElementById('pg_result').style.display = 'none';
-  });
-</script>
-
-
 <!-- your page content continues here -->
 
 
@@ -271,5 +188,6 @@
         });
     </script>
 </body>
+
 
 </html>
