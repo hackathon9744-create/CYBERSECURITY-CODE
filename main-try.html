@@ -16,9 +16,22 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0f172b;
-            background-image: radial-gradient(at 0% 0%, rgba(37, 150, 190, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.15) 0px, transparent 50%);
-            background-attachment: fixed;
+            background-image: radial-gradient(circle at 20% 20%, rgba(37, 150, 190, 0.15) 0px, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(79, 70, 229, 0.15) 0px, transparent 50%);
+            background-size: 200% 200%;
+            animation: gradientMove 30s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 0%, 100% 100%;
+            }
+            50% {
+                background-position: 100% 0%, 0% 100%;
+            }
+            100% {
+                background-position: 0% 0%, 100% 100%;
+            }
         }
 
         .fade-in-up {
@@ -86,7 +99,8 @@
                 <form id="urlForm">
                     <input id="urlInput" type="url" placeholder="https://example.com"
                         class="w-full px-4 py-2 bg-slate-900/60 border border-white/20 rounded-lg text-white placeholder-gray-400">
-                    <button class="mt-4 w-full bg-yellow-500 hover:bg-yellow-400 py-2 rounded-lg text-white font-semibold">Check</button>
+                    <button
+                        class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Check</button>
                 </form>
             </div>
         </section>
@@ -98,7 +112,8 @@
                 <form id="textForm">
                     <textarea id="textInput" rows="6" placeholder="Paste suspicious text..."
                         class="w-full px-4 py-2 bg-slate-900/60 border border-white/20 rounded-lg text-white placeholder-gray-400"></textarea>
-                    <button class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Analyze</button>
+                    <button
+                        class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Analyze</button>
                 </form>
             </div>
         </section>
