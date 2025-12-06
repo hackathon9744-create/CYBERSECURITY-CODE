@@ -90,17 +90,15 @@
             }
         }
 
-       /* Result boxes */
-.result-box {
-    display: none;
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    backdrop-blur: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    white-space: pre-wrap; /* <-- add this */
-}
-
+        /* Result boxes */
+        .result-box {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            backdrop-blur: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
         /* Footer links */
         footer a {
@@ -204,134 +202,101 @@
         </div>
     </footer>
 
-   <script>
-  // ... keep BACKEND_URL and other code above ...
+    <script>
+        /* URL & Text Handling */
+        const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
 
-  function normalizeRisk(risk) {
-    if (!risk && risk !== 0) return "";
-    return String(risk).trim().toLowerCase();
-  }
+        async function handleUrlSubmit(e) {
+            e.preventDefault();
+            const url = document.getElementById("urlInput").value;
+            const box = document.getElementById("urlResult");
+            box.style.display = "block";
+            box.textContent = "🔍 Checking URL...";
 
-  function setResultBox(box, riskLevel, title, explanation, rawJson=null) {
-    // ensure result-box base class is preserved
-    // remove any previous color classes
-    box.classList.remove(
-      "bg-red-500/20", "text-red-300", "border-red-500/40",
-      "bg-yellow-500/20", "text-yellow-300", "border-yellow-500/40",
-      "bg-teal-500/20", "text-teal-300", "border-teal-500/40"
-    );
+            try {
+                const r = await fetch(BACKEND_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: url, use_openai: true })
+                });
+                const out = await r.json();
+                box.className = "result-box block " +
+                    (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
+                        out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
+                            "bg-teal-500/20 text-teal-300 border-teal-500/40");
+                box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
+            } catch {
+                box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
+                box.textContent = "❌ Backend unreachable.";
+            }
+        }
 
-    // make sure it is visible
-    box.style.display = "block";
+        async function handleTextSubmit(e) {
+            e.preventDefault();
+            const text = document.getElementById("textInput").value;
+            const box = document.getElementById("textResult");
+            box.style.display = "block";
+            box.textContent = "🔍 Analyzing text...";
 
-    // add classes based on risk
-    if (riskLevel === "high") {
-      box.classList.add("bg-red-500/20", "text-red-300", "border-red-500/40");
-    } else if (riskLevel === "medium") {
-      box.classList.add("bg-yellow-500/20", "text-yellow-300", "border-yellow-500/40");
-    } else {
-      box.classList.add("bg-teal-500/20", "text-teal-300", "border-teal-500/40");
-    }
+            try {
+                const r = await fetch(BACKEND_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: text, use_openai: true })
+                });
+                const out = await r.json();
+                box.className = "result-box block " +
+                    (out.final_risk === "High" ? "bg-red-500/20 text-red-300 border-red-500/40" :
+                        out.final_risk === "Medium" ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40" :
+                            "bg-teal-500/20 text-teal-300 border-teal-500/40");
+                box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${out.explanation.join(" ")}`;
+            } catch {
+                box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
+                box.textContent = "❌ Backend unreachable.";
+            }
+        }
 
-    // render nice HTML — escape minimal user text if you need, here we assume backend is safe
-    box.innerHTML = `
-      <div style="font-weight:700; margin-bottom:6px;">
-        ${title}
-      </div>
-      <div style="opacity:0.95; line-height:1.45;">
-        ${explanation}
-      </div>
-      ${ rawJson ? `<pre style="margin-top:8px; font-size:12px; opacity:0.9;">${JSON.stringify(rawJson, null, 2)}</pre>` : '' }
-    `;
-  }
+        document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
+        document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
 
-  async function handleUrlSubmit(e) {
-    e.preventDefault();
-    const url = document.getElementById("urlInput").value.trim();
-    const box = document.getElementById("urlResult");
-    box.style.display = "block";
-    // show loader text while waiting
-    box.classList.remove("bg-red-500/20","text-red-300","border-red-500/40","bg-yellow-500/20","text-yellow-300","border-yellow-500/40","bg-teal-500/20","text-teal-300","border-teal-500/40");
-    box.innerText = "🔍 Checking URL...";
+        /* MATRIX RAIN EFFECT */
+        const canvas = document.getElementById("matrixCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-    try {
-      const r = await fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: url, use_openai: true })
-      });
+        const letters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const fontSize = 16;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array(columns).fill(1);
 
-      if (!r.ok) {
-        // http error
-        setResultBox(box, "high", "❌ Error contacting backend", `Status code: ${r.status}.` );
-        return;
-      }
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const out = await r.json();
-      const risk = normalizeRisk(out.final_risk);
-      const title = `Risk: ${out.final_risk || "Unknown"}`;
-      // create explanation safely
-      const explanation = Array.isArray(out.explanation) ? out.explanation.join(" ") : (out.explanation || "No explanation provided.");
+            ctx.fillStyle = '#0ff';
+            ctx.font = fontSize + "px monospace";
 
-      if (risk === "high" || risk.includes("high")) {
-        setResultBox(box, "high", title, explanation, out);
-      } else if (risk === "medium" || risk.includes("medium")) {
-        setResultBox(box, "medium", title, explanation, out);
-      } else {
-        setResultBox(box, "low", title, explanation, out);
-      }
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-    } catch (err) {
-      setResultBox(box, "high", "❌ Backend unreachable", "Please check your backend URL or internet connection.");
-      console.error(err);
-    }
-  }
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
 
-  async function handleTextSubmit(e) {
-    e.preventDefault();
-    const text = document.getElementById("textInput").value.trim();
-    const box = document.getElementById("textResult");
-    box.style.display = "block";
-    box.classList.remove("bg-red-500/20","text-red-300","border-red-500/40","bg-yellow-500/20","text-yellow-300","border-yellow-500/40","bg-teal-500/20","text-teal-300","border-teal-500/40");
-    box.innerText = "🔍 Analyzing text...";
+                drops[i]++;
+            }
+        }
 
-    try {
-      const r = await fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: text, use_openai: true })
-      });
+        setInterval(drawMatrix, 50);
 
-      if (!r.ok) {
-        setResultBox(box, "high", "❌ Error contacting backend", `Status code: ${r.status}.` );
-        return;
-      }
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
 
-      const out = await r.json();
-      const risk = normalizeRisk(out.final_risk);
-      const title = `Risk: ${out.final_risk || "Unknown"}`;
-      const explanation = Array.isArray(out.explanation) ? out.explanation.join(" ") : (out.explanation || "No explanation provided.");
-
-      if (risk === "high" || risk.includes("high")) {
-        setResultBox(box, "high", title, explanation, out);
-      } else if (risk === "medium" || risk.includes("medium")) {
-        setResultBox(box, "medium", title, explanation, out);
-      } else {
-        setResultBox(box, "low", title, explanation, out);
-      }
-
-    } catch (err) {
-      setResultBox(box, "high", "❌ Backend unreachable", "Please check your backend URL or internet connection.");
-      console.error(err);
-    }
-  }
-
-  document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
-  document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
-
-  // ... rest of your matrix code follows ...
-</script>
-
+    </script>
 </body>
 
 </html>
