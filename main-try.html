@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggregator Dashboard</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172b;
+            background-image: radial-gradient(at 0% 0%, rgba(37, 150, 190, 0.15) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+        /* Custom scrollbar for the news feed */
+        #news-feed::-webkit-scrollbar {
+            width: 4px;
+        }
+        #news-feed::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+        #news-feed::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        /* --- Animation Styles (Matched to About Page) --- */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body class="min-h-screen text-gray-100">
+
+    <header class="bg-indigo-900/80 backdrop-blur-md text-white shadow-lg p-4 sticky top-0 z-10 border-b border-white/10">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Data Aggregation Hub</h1>
+            <div class="flex items-center gap-6">
+                <span class="text-sm opacity-80 hidden sm:block border-r border-indigo-500/50 pr-6">Analyze & Stay Updated</span>
+                
+                <!-- Dropdown Menu -->
+                <div class="relative">
+                    <button id="menu-btn" class="flex items-center gap-1 text-white hover:text-indigo-200 font-medium transition-colors focus:outline-none">
+                        <span>Menu</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <!-- Dropdown Items -->
+                    <div id="menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-indigo-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-2 z-20 origin-top-right transition-transform transform">
+                        <a href="firstpage.html" class="block px-4 py-2 text-sm font-bold text-gray-100 hover:bg-white/10 transition-colors">Home</a>
+                        <!-- Linked to about.html -->
+                        <a href="about.html" class="block px-4 py-2 text-sm font-bold text-gray-100 hover:bg-white/10 transition-colors">About</a>
+                        <a href="contact.html" class="block px-4 py-2 text-sm font-bold text-gray-100 hover:bg-white/10 transition-colors">Contact</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Changed layout from row to col to stack elements vertically -->
+        <div class="flex flex-col gap-12">
+
+            <!-- MAIN CONTENT / INPUT PANEL (Top Section - Full Width) -->
+            <section class="w-full space-y-8">
+                <h2 class="text-3xl font-semibold text-white border-b border-white/10 pb-2 fade-in-up">Analysis Tools</h2>
+
+                <!-- URL Submission Card (Fraud Check) - Added Animation -->
+                <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-white/10 hover:border-white/20 transition-all duration-300 fade-in-up delay-100">
+                    <h3 class="text-xl font-medium text-red-400 mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        URL Fraud Check (Data Sheet)
+                    </h3>
+                    <form id="urlForm">
+                        <label for="urlInput" class="block text-sm font-medium text-gray-300 mb-1">Web Address</label>
+                        <input type="url" id="urlInput" placeholder="e.g., https://safe-domain.com/page" required
+                            class="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition duration-150 outline-none">
+                        <button type="submit"
+                            class="mt-4 w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white py-2 px-4 rounded-lg transition duration-200 shadow-lg font-semibold border border-red-500/20">
+                            Check for Fraud
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Text Submission Card (AI Check) - Added Animation -->
+                <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-white/10 hover:border-white/20 transition-all duration-300 fade-in-up delay-200">
+                    <h3 class="text-xl font-medium text-teal-400 mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1v-3m-6 0h6m-5 0v-1a1 1 0 011-1h2a1 1 0 011 1v1m-3 0a3 3 0 00-3 3v3a3 3 0 003 3h6a3 3 0 003-3v-3a3 3 0 00-3-3h-6z"></path></svg>
+                        Text AI Generation Check
+                    </h3>
+                    <form id="textForm">
+                        <label for="textInput" class="block text-sm font-medium text-gray-300 mb-1">Text Content</label>
+                        <textarea id="textInput" rows="6" placeholder="Paste text to check for AI generation..." required
+                            class="w-full px-4 py-2 bg-slate-900/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition duration-150 outline-none"></textarea>
+                        <button type="submit"
+                            class="mt-4 w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-500 hover:to-teal-600 text-white py-2 px-4 rounded-lg transition duration-200 shadow-lg font-semibold border border-teal-500/20">
+                            Analyze AI Score
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Submission Results/Message Box -->
+                <div id="messageBox" class="p-4 rounded-xl hidden transition-all duration-300 ease-in-out backdrop-blur-md" role="alert">
+                    <!-- Dynamic messages will be inserted here -->
+                </div>
+
+            </section>
+
+            <!-- NEWS SIDEBAR (Bottom Section - Full Width) - Added Animation -->
+            <aside class="w-full fade-in-up delay-300">
+                <div class="bg-white/5 backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-white/10">
+                    <h2 class="text-2xl font-bold text-white mb-4 flex items-center border-b border-white/10 pb-2">
+                        <svg class="w-6 h-6 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0l-5-5m5 5l-5 5"></path><path d="M2.5 5A2.5 2.5 0 015 2.5h14A2.5 2.5 0 0121.5 5v14A2.5 2.5 0 0119 21.5H5A2.5 2.5 0 012.5 19V5z"></path></svg>
+                        Global Headlines
+                    </h2>
+                    
+                    <!-- News Feed Container - Grid layout for larger screens since it's full width now -->
+                    <div id="news-feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Loading indicator or news articles will populate here -->
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-white/10 text-center">
+                        <button id="refreshNewsButton"
+                            class="text-sm text-indigo-400 hover:text-indigo-300 font-medium transition duration-150 flex items-center justify-center mx-auto">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11.356 2a8.001 8.001 0 01-15.356 2m0 0H4"></path></svg>
+                            Refresh News
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- JavaScript and Module Imports -->
+    <script type="module">
+        // --- Firebase Imports and Configuration ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Global Variables (Provided by Canvas Environment) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof _firebase_config !== 'undefined' ? JSON.parse(_firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        let db;
+        let auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        // --- Mock Data and API Configuration ---
+        const MOCK_API_ENDPOINT = 'https://mock-news-api.com/v2/top-headlines';
+        const MOCK_API_KEY = 'YOUR_MOCK_API_KEY'; // Placeholder
+
+        // Mock response data based on search results
+        const mockNewsData = {
+            status: "ok",
+            totalResults: 5,
+            articles: [
+                {
+                    title: "SpaceX launches historic commercial mission to Mars orbit",
+                    description: "The Falcon Heavy successfully deployed the first private orbital research station, marking a new era in deep space exploration.",
+                    source: "Astro Tech Daily",
+                    url: "#",
+                    publishedAt: "2025-12-06T10:00:00Z"
+                },
+                {
+                    title: "Global Markets Rally: Central Banks signal end to rate hike cycle",
+                    description: "Stock indices across Asia and Europe surged following coordinated announcements from major financial bodies.",
+                    source: "Financial Times",
+                    url: "#",
+                    publishedAt: "2025-12-06T09:30:00Z"
+                },
+                {
+                    title: "New AI Model ‘Gemini’ achieves state-of-the-art results in language tasks",
+                    description: "Google's latest AI development promises breakthroughs in conversational ability and code generation.",
+                    source: "TechCrunch",
+                    url: "#",
+                    publishedAt: "2025-12-05T18:45:00Z"
+                },
+                {
+                    title: "Climate Summit: Nations pledge accelerated transition to green energy",
+                    description: "A consensus was reached in Dubai to triple renewable energy capacity by 2030, though fossil fuel phase-out remains contentious.",
+                    source: "World News Network",
+                    url: "#",
+                    publishedAt: "2025-12-05T14:00:00Z"
+                },
+                {
+                    title: "Euro 2028 Qualifiers: Major upsets as two top-ranked teams fail to advance",
+                    description: "Fans react to the stunning elimination of perennial favorites in the final group stage matches.",
+                    source: "Sports 360",
+                    url: "#",
+                    publishedAt: "2025-12-04T22:00:00Z"
+                }
+            ]
+        };
+        
+        // --- Utility Functions ---
+
+        /**
+         * Function to display non-intrusive messages in the submission area.
+         */
+        function showMessage(type, message) {
+            const box = document.getElementById('messageBox');
+            box.textContent = message;
+            box.className = 'p-4 rounded-xl transition-all duration-300 ease-in-out backdrop-blur-md border'; // Reset classes
+            
+            if (type === 'success') {
+                box.classList.add('bg-green-500/20', 'text-green-200', 'border-green-500/30');
+            } else if (type === 'error') {
+                box.classList.add('bg-red-500/20', 'text-red-200', 'border-red-500/30');
+            } else if (type === 'warn') {
+                 box.classList.add('bg-yellow-500/20', 'text-yellow-200', 'border-yellow-500/30');
+            } else {
+                box.classList.add('bg-blue-500/20', 'text-blue-200', 'border-blue-500/30');
+            }
+            box.classList.remove('hidden');
+            
+            // Hide the message after 8 seconds
+            setTimeout(() => {
+                box.classList.add('hidden');
+            }, 8000);
+        }
+        
+        /**
+         * Simulates the API fetch operation with exponential backoff.
+         */
+        async function fetchWithBackoff(url, options, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    if (i === retries - 1) {
+                        console.error('Final API request failed after all retries:', error);
+                        throw error;
+                    }
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 500;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+        
+        // --- Firebase Core Logic ---
+
+        async function initializeFirebase() {
+            if (!firebaseConfig) {
+                console.error("Firebase config is missing.");
+                isAuthReady = true; // Still set to true to unblock UI logic
+                return;
+            }
+            // setLogLevel('debug'); // Uncomment to see Firebase logs
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase authentication failed:", error);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log("User authenticated. ID:", userId);
+                } else {
+                    console.log("Signed out or anonymous.");
+                    // In case initial token failed, sign in anonymously
+                    if (!userId) {
+                        userId = crypto.randomUUID(); // Fallback to anonymous ID
+                    }
+                }
+                isAuthReady = true;
+            });
+        }
+        
+        /**
+         * Saves a submission log to Firestore.
+         */
+        async function saveSubmissionLog(type, data) {
+            if (!db || !userId || !isAuthReady) {
+                console.warn("Firestore not ready. Cannot save log.");
+                return;
+            }
+
+            const logData = {
+                ...data,
+                type: type,
+                timestamp: new Date().toISOString(),
+                userId: userId
+            };
+
+            try {
+                // Use private path: /artifacts/{appId}/users/{userId}/submissions
+                const submissionsRef = collection(db, `artifacts/${appId}/users/${userId}/submissions`);
+                await addDoc(submissionsRef, logData);
+                console.log(`Successfully logged ${type} submission.`);
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
+        }
+        
+        // --- Submission Handlers (LOGIC REMOVED FOR CUSTOM ML) ---
+
+        async function handleUrlSubmit(event) {
+            event.preventDefault();
+            const urlInput = document.getElementById('urlInput');
+            const url = urlInput.value;
+            
+            // ----------------------------------------------------
+            // TODO: INTEGRATE YOUR CUSTOM ML MODEL FOR URL FRAUD DETECTION HERE
+            // Example:
+            // const result = await myMLService.checkUrl(url);
+            // ----------------------------------------------------
+
+            console.log("URL Submitted for analysis (ML Pending):", url);
+
+            // Placeholder Message
+            showMessage('info', 'ℹ️ Analysis Pending: Connect your ML model in the code to see results.');
+            
+            // Log to Firestore (Optional - keeps record of submission)
+            await saveSubmissionLog('url', { url: url, status: "pending_ml" });
+
+            urlInput.value = ''; // Clear input
+        }
+
+        async function handleTextSubmit(event) {
+            event.preventDefault();
+            const textInput = document.getElementById('textInput');
+            const text = textInput.value;
+
+            // ----------------------------------------------------
+            // TODO: INTEGRATE YOUR CUSTOM ML MODEL FOR AI TEXT DETECTION HERE
+            // Example:
+            // const result = await myMLService.checkText(text);
+            // ----------------------------------------------------
+
+            console.log("Text Submitted for analysis (ML Pending)");
+
+            // Placeholder Message
+            showMessage('info', 'ℹ️ Analysis Pending: Connect your ML model in the code to see results.');
+
+            // Log to Firestore (Optional - keeps record of submission)
+            await saveSubmissionLog('text', { textSnippet: text.substring(0, 50) + '...', status: "pending_ml" });
+            
+            textInput.value = ''; // Clear input
+        }
+        
+        // --- News API Interaction (Original function kept for completeness) ---
+
+        async function fetchNews() {
+            const newsFeed = document.getElementById('news-feed');
+            
+            newsFeed.innerHTML = ''; // Clear old news
+            
+            // Show loading state
+            const loadingHtml = `
+                <div class="flex items-center justify-center p-8 space-x-2 text-indigo-400 w-full col-span-3">
+                    <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Fetching latest headlines...</span>
+                </div>
+            `;
+            newsFeed.innerHTML = loadingHtml;
+
+            const mockApiUrl = 'https://jsonplaceholder.typicode.com/posts/1'; 
+
+            try {
+                // Mocking API delay and success by fetching a small resource and then using static data
+                await fetchWithBackoff(mockApiUrl, { method: 'GET' }); 
+                const newsArticles = mockNewsData.articles;
+                
+                // Clear the loading indicator
+                newsFeed.innerHTML = ''; 
+
+                if (newsArticles.length === 0) {
+                    newsFeed.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-3">No news found at this moment.</p>';
+                    return;
+                }
+
+                // Render the news articles
+                newsArticles.forEach(article => {
+                    const articleElement = document.createElement('a');
+                    articleElement.href = article.url;
+                    articleElement.target = '_blank';
+                    // Updated classes for Glass UI
+                    articleElement.className = 'block p-3 border border-white/10 rounded-lg hover:bg-white/5 transition duration-150 group';
+                    
+                    const date = new Date(article.publishedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
+
+                    // Updated text colors for dark mode
+                    articleElement.innerHTML = `
+                        <h4 class="text-base font-semibold text-gray-200 group-hover:text-indigo-400 transition duration-150">${article.title}</h4>
+                        <p class="text-sm text-gray-400 mt-1">${article.description.substring(0, 100)}...</p>
+                        <div class="mt-2 flex justify-between text-xs text-gray-500">
+                            <span>Source: ${article.source}</span>
+                            <span>${date}</span>
+                        </div>
+                    `;
+                    newsFeed.appendChild(articleElement);
+                });
+
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                newsFeed.innerHTML = `
+                    <div class="bg-red-500/10 text-red-300 border border-red-500/20 p-4 rounded-lg text-sm col-span-3">
+                        Could not connect to the news service. Please check the API configuration in a real implementation. <br/>
+                        Showing mock data structure.
+                    </div>
+                `;
+            }
+        }
+        
+        // --- Initialization and Event Listeners ---
+        
+        window.addEventListener('load', async () => {
+            // 1. Initialize Firebase and Auth
+            await initializeFirebase();
+            
+            // 2. Fetch News
+            document.getElementById('refreshNewsButton').addEventListener('click', fetchNews);
+            fetchNews(); 
+            
+            // 3. Attach Form Submit Listeners
+            document.getElementById('urlForm').addEventListener('submit', handleUrlSubmit);
+            document.getElementById('textForm').addEventListener('submit', handleTextSubmit);
+
+            // 4. Dropdown Menu Logic
+            const menuBtn = document.getElementById('menu-btn');
+            const menuDropdown = document.getElementById('menu-dropdown');
+
+            if (menuBtn && menuDropdown) {
+                // Toggle menu on click
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menuDropdown.classList.toggle('hidden');
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                        menuDropdown.classList.add('hidden');
+                    }
+                });
+            }
+        });
+
+    </script>
+
+</body>
+</html>
