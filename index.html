@@ -9,7 +9,8 @@
 
   <style>
     body {
-      background: radial-gradient(circle at 20% 30%, #1e1b4b, #0f172a 60%, #0a0f1e 100%);
+      /* NEW CYBER BLUE BACKGROUND (Dashboard Theme) */
+      background: radial-gradient(circle at 20% 30%, #00334a, #001826 60%, #000d17 100%);
       font-family: Inter, sans-serif;
       color: #e2e8f0;
     }
@@ -23,18 +24,27 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.35);
     }
 
+    /* NEW CYAN–BLUE BUTTON (Matches Dashboard Neon) */
     .btn-primary {
-      background: linear-gradient(90deg,#7c3aed,#4f46e5);
+      background: linear-gradient(90deg,#00eaff,#0076ff);
       padding: 14px 24px;
       border-radius: 12px;
       font-weight: 600;
       color: white;
       transition: 0.25s ease;
+      box-shadow: 0 0 12px rgba(0, 200, 255, 0.4);
     }
 
     .btn-primary:hover {
-      opacity: 0.85;
+      opacity: 0.92;
       transform: translateY(-2px);
+      box-shadow: 0 0 18px rgba(0, 200, 255, 0.55);
+    }
+
+    /* ICON BOX COLOR UPDATED */
+    .icon-box {
+      background: linear-gradient(135deg,#00eaff,#0076ff);
+      border-radius: 18px;
     }
   </style>
 </head>
@@ -42,7 +52,7 @@
 
   <div class="max-w-3xl mx-auto glass-card text-center">
     <div class="flex justify-center mb-6">
-      <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#7c3aed,#4f46e5);" class="flex items-center justify-center">
+      <div class="icon-box flex items-center justify-center" style="width:64px;height:64px;">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
           <path d="M12 2L20 7v6c0 5-4 9-8 9s-8-4-8-9V7l8-5z" fill="white" opacity="0.12"/>
           <path d="M12 3.3 5 7.9v5.5c0 4.3 3 7.8 7 7.8s7-3.5 7-7.8V7.9L12 3.3z"
