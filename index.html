@@ -1,276 +1,66 @@
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Particle Field Hero</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@400&display=swap');
-    
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CyberSec Intelligence — Welcome</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
     body {
-        font-family: 'Inter', sans-serif;
-        background-color: #030014;
-        overflow: hidden;
+      background: radial-gradient(circle at 20% 30%, #1e1b4b, #0f172a 60%, #0a0f1e 100%);
+      font-family: Inter, sans-serif;
+      color: #e2e8f0;
     }
 
-    #bg-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
+    .glass-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.35);
     }
 
-    .content-container {
-        position: relative;
-        z-index: 1;
+    .btn-primary {
+      background: linear-gradient(90deg,#7c3aed,#4f46e5);
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      color: white;
+      transition: 0.25s ease;
     }
 
-    h1 {
-        font-family: 'Playfair Display', serif;
+    .btn-primary:hover {
+      opacity: 0.85;
+      transform: translateY(-2px);
     }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center px-4">
 
-    .text-shadow-gold {
-        text-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 165, 0, 0.3);
-    }
-
-    .button-glow {
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        transition: all 0.3s ease;
-    }
-
-    .button-glow:hover {
-        box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 165, 0, 0.4);
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .fade-in {
-        animation: fadeIn 1.5s ease-out 0.5s forwards;
-        opacity: 0;
-    }
-</style>
-
-<canvas id="bg-canvas"></canvas>
-
-<div class="content-container w-full h-screen flex items-center justify-center p-4">
-    <div class="text-center max-w-3xl mx-auto fade-in">
-        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white text-shadow-gold">
-            Cybersecurity a myth ?
-        </h1>
-        <margin-bottom: 20px;></margin-bottom:>
-         ️
-        <p class="text-5xl md:text-6xl lg:text-2xl font-black text-white text-shadow-gold">
-            Every bit counts in digital Realm        </p>
-        <div class="mt-10 flex items-center justify-center">
-    <a href="main-try.html" class="bg-gradient-to-r from-yellow-500 to-orange-400 text-black font-bold py-3 px-8 rounded-full transform hover:scale-105 button-glow inline-block">
-        Is your BIT safe?
-    </a>
-</div>
-        </div>
+  <div class="max-w-3xl mx-auto glass-card text-center">
+    <div class="flex justify-center mb-6">
+      <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#7c3aed,#4f46e5);" class="flex items-center justify-center">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L20 7v6c0 5-4 9-8 9s-8-4-8-9V7l8-5z" fill="white" opacity="0.12"/>
+          <path d="M12 3.3 5 7.9v5.5c0 4.3 3 7.8 7 7.8s7-3.5 7-7.8V7.9L12 3.3z"
+            stroke="white" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
+        </svg>
+      </div>
     </div>
-</div>
 
-<script type="importmap">
-{
-    "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
-    }
-}
-</script>
+    <h1 class="text-4xl font-bold text-white mb-4">CyberSec Intelligence</h1>
+    <p class="text-gray-300 text-lg mb-8 leading-relaxed">
+      An AI-powered fraud detection engine that protects users from phishing URLs, scam messages, 
+      and impersonation threats using a hybrid ML + LLM model.
+    </p>
 
-<script type="module">
-    import * as THREE from 'three';
-    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-    import { Line2 } from 'three/addons/lines/Line2.js';
-    import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-    import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+    <a href="main-try.html" class="btn-primary text-lg inline-block">Launch Dashboard</a>
 
-    let scene, camera, renderer, composer, particles, energyLines = [];
-    const mouse = new THREE.Vector2(10000, 10000);
-    
-    let particleData = [];
+    <p class="mt-6 text-sm text-gray-400">Built for PKP Hackathon 2025</p>
+  </div>
 
-    function init() {
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 50);
-
-        const canvas = document.getElementById('bg-canvas');
-        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-        composer = new EffectComposer(renderer);
-        composer.addPass(new RenderPass(scene, camera));
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 
-            0.5, 
-            0.12, 
-            0.5 
-        );
-        composer.addPass(bloomPass);
-
-        createMainParticles();
-        createEnergyLines();
-        
-        window.addEventListener('resize', onWindowResize);
-        window.addEventListener('mousemove', onMouseMove);
-    }
-
-    function createMainParticles() {
-        const particleCount = 15000;
-        const positions = new Float32Array(particleCount * 3);
-        const colors = new Float32Array(particleCount * 3);
-        const baseColor = new THREE.Color(0x001f3f);
-
-        for (let i = 0; i < particleCount; i++) {
-            const i3 = i * 3;
-            const x = (Math.random() - 0.5) * 120;
-            const y = (Math.random() - 0.5) * 120;
-
-            particleData.push({
-                originalPos: new THREE.Vector3(x, y, (Math.random() - 0.5) * 20),
-                currentPos: new THREE.Vector3(x, y, (Math.random() - 0.5) * 20),
-                velocity: new THREE.Vector3(),
-            });
-
-            positions[i3] = x;
-            positions[i3 + 1] = y;
-            positions[i3 + 2] = particleData[i].originalPos.z;
-
-            baseColor.toArray(colors, i3);
-        }
-
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        
-        const material = new THREE.PointsMaterial({
-            size: 1.5,
-            vertexColors: true,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-            sizeAttenuation: true
-        });
-
-        particles = new THREE.Points(geometry, material);
-        scene.add(particles);
-    }
-
-    function createEnergyLines() {
-        const lineCount = 30;
-        for (let i = 0; i < lineCount; i++) {
-            const geometry = new LineGeometry();
-            const points = [];
-            const z = (Math.random() - 0.5) * 150 - 75;
-            const startX = (Math.random() - 0.5) * 150;
-            const startY = (Math.random() - 0.5) * 150;
-            const length = Math.random() * 10 + 5;
-
-            points.push(startX, startY, z);
-            points.push(startX, startY - length, z);
-            geometry.setPositions(points);
-
-            const material = new LineMaterial({
-                color: 0x88aaff,
-                linewidth: 0.003,
-                transparent: true,
-                opacity: 0.5,
-                dashed: false,
-            });
-
-            const line = new Line2(geometry, material);
-            
-            line.userData.speed = Math.random() * 30 + 15;
-            line.userData.originalZ = z;
-
-            energyLines.push(line);
-            scene.add(line);
-        }
-    }
-    
-    function onWindowResize() {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(width, height);
-        composer.setSize(width, height);
-
-        energyLines.forEach(line => {
-            line.material.resolution.set(width, height);
-        });
-    }
-    
-    function onMouseMove(event) {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    }
-
-    const clock = new THREE.Clock();
-    function animate() {
-        
-        const delta = clock.getDelta();
-        const elapsedTime = clock.getElapsedTime();
-        requestAnimationFrame(animate);
-
-        const mousePos3D = new THREE.Vector3(mouse.x, mouse.y, 0.3);
-        mousePos3D.unproject(camera);
-        const dir = mousePos3D.sub(camera.position).normalize();
-        const distance = -camera.position.z / dir.z;
-        const finalMousePos = camera.position.clone().add(dir.multiplyScalar(distance));
-
-        const positions = particles.geometry.attributes.position.array;
-        const colors = particles.geometry.attributes.color.array;
-        const highlightColor = new THREE.Color(0xffd700);
-
-        for (let i = 0; i < particleData.length; i++) {
-            const i3 = i * 3;
-            const data = particleData[i];
-            
-            const diff = new THREE.Vector3().subVectors(data.currentPos, finalMousePos);
-            const dist = diff.length();
-            let force = 0;
-            if(dist < 20) {
-                force = (1 - (dist / 20)) * 0.1;
-                diff.normalize();
-                data.velocity.add(diff.multiplyScalar(force));
-            }
-
-            const springForce = new THREE.Vector3().subVectors(data.originalPos, data.currentPos).multiplyScalar(0.01);
-            data.velocity.add(springForce);
-            data.velocity.multiplyScalar(0.92);
-
-            data.currentPos.add(data.velocity);
-
-            positions[i3] = data.currentPos.x;
-            positions[i3 + 1] = data.currentPos.y;
-            positions[i3 + 2] = data.currentPos.z + Math.sin(data.originalPos.x * 0.1 + elapsedTime) * 5.0;
-
-            let colorMix = dist < 20 ? (1 - dist / 20) : 0;
-            const color = new THREE.Color(0x001f3f).lerp(highlightColor, colorMix);
-            color.toArray(colors, i3);
-        }
-        particles.geometry.attributes.position.needsUpdate = true;
-        particles.geometry.attributes.color.needsUpdate = true;
-
-        energyLines.forEach(line => {
-            line.position.z = (line.position.z + line.userData.speed * delta);
-            if (line.position.z > 50) {
-                line.position.z = -150;
-            }
-        });
-
-        composer.render();
-    }
-    
-    init();
-    animate();
-</script>
+</body>
+</html>
