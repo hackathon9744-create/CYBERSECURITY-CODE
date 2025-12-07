@@ -144,12 +144,7 @@
 
         <div class="card">
           <h3 class="font-semibold">Recent Cyber Attacks</h3>
-          <ul class="mt-3 list-disc ml-5 text-sm muted">
-            <li>SolarWinds supply chain breach — 2020</li>
-            <li>Facebook data leak — 2019</li>
-            <li>JBS ransomware — 2021</li>
-            <li>Global phishing wave — 2024</li>
-          </ul>
+          <ul id="attackList" class="mt-3 list-disc ml-5 text-sm muted"></ul>
         </div>
 
         <div class="card">
@@ -205,6 +200,8 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+
+    loadAttacks();
 
     // URL CHECK
     document.getElementById("analyzeUrlBtn").onclick = async () => {
@@ -267,10 +264,36 @@
     };
 
   });
+
+  async function loadAttacks() {
+  try {
+    let res = await fetch(API_BASE + "/latest_cyber_attacks");
+    let data = await res.json();
+
+    let box = document.getElementById("attackList");
+    box.innerHTML = ""; // Clear old items
+
+    if (!data.attacks || data.attacks.length === 0) {
+      box.innerHTML = "<li class='text-sm muted'>No recent alerts available</li>";
+      return;
+    }
+
+    data.attacks.forEach(title => {
+      let li = document.createElement("li");
+      li.textContent = title;
+      li.className = "text-sm text-gray-300";
+      box.appendChild(li);
+    });
+
+  } catch (err) {
+    console.log("Failed to load cyber attacks:", err);
+  }
+  }
 </script>
 
 </body>
 </html>
+
 
 
 
