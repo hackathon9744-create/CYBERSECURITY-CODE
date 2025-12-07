@@ -29,3 +29,29 @@ def analyze(req: AnalyzeRequest):
 @app.get("/")
 def home():
     return {"status": "Backend running successfully"}
+
+import requests
+
+@app.get("/latest_cyber_attacks")
+def latest_attacks():
+    try:
+        # Example RSS feed (safe + free + used widely)
+        FEED_URL = "https://www.cert-in.org.in/RssNews.jsp"
+
+        r = requests.get(FEED_URL, timeout=5)
+        if r.status_code != 200:
+            return {"attacks": []}
+
+        # Very lightweight parsing
+        lines = r.text.split("<item>")[1:6]  # First 5 items
+        attacks = []
+        for item in lines:
+            title_start = item.find("<title>") + 7
+            title_end = item.find("</title>")
+            title = item[title_start:title_end]
+            attacks.append(title)
+
+        return {"attacks": attacks}
+
+    except Exception:
+        return {"attacks": []}
