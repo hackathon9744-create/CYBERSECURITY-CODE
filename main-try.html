@@ -16,10 +16,42 @@
     }
 
     body {
-      background: linear-gradient(180deg, #050a17, #081020, #040b16);
+      background: radial-gradient(circle at top, #021018, #000000 75%);
       font-family: Inter, sans-serif;
       color: #e2e8f0;
       letter-spacing: 0.1px;
+      overflow-x: hidden;
+    }
+
+    /* Cyber Neon Grid Background */
+    .bg-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -3;
+      background-image:
+        linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridMove 12s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { background-position: 0px 0px; }
+      100% { background-position: 0px 40px; }
+    }
+
+    /* Cyan Glow Layer */
+    .bg-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -4;
+      background: radial-gradient(circle at center, rgba(0, 200, 255, 0.15), transparent 70%);
     }
 
     .card {
@@ -79,10 +111,26 @@
       transform: translateY(-1px);
       opacity: 0.95;
     }
+
+    /* Matrix Canvas sits behind content but above grid */
+    #hackCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      opacity: 0.28;
+    }
   </style>
 </head>
 
 <body>
+
+<!-- 🔵 CYBER BACKGROUND LAYERS -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<canvas id="hackCanvas"></canvas>
 
 <!-- HEADER -->
 <header class="glass-header fixed top-0 left-0 right-0 z-50">
@@ -185,39 +233,37 @@
         </div>
 
         <div class="card">
-  <h3 class="font-semibold text-lg text-cyan-300 tracking-wide">🔐 Prevention Tips</h3>
+          <h3 class="font-semibold text-lg text-cyan-300 tracking-wide">🔐 Prevention Tips</h3>
 
-  <ul class="mt-4 space-y-3 text-sm leading-relaxed">
+          <ul class="mt-4 space-y-3 text-sm leading-relaxed">
 
-    <li>
-      <span class="font-bold text-white">✔ Enable 2FA everywhere —</span>
-      Adds a strong second layer of protection to your accounts.
-    </li>
+            <li>
+              <span class="font-bold text-white">✔ Enable 2FA everywhere —</span>
+              Adds a strong second layer of protection to your accounts.
+            </li>
 
-    <li>
-      <span class="font-bold text-white">✔ Verify the sender —</span>
-      Double-check unknown numbers, emails, and identities before trusting them.
-    </li>
+            <li>
+              <span class="font-bold text-white">✔ Verify the sender —</span>
+              Double-check unknown numbers, emails, and identities before trusting them.
+            </li>
 
-    <li>
-      <span class="font-bold text-white">✔ Never click unknown links —</span>
-      Always inspect URLs carefully before opening anything.
-    </li>
+            <li>
+              <span class="font-bold text-white">✔ Never click unknown links —</span>
+              Always inspect URLs carefully before opening anything.
+            </li>
 
-    <li>
-      <span class="font-bold text-white">✔ Check domain spelling & TLD —</span>
-      Scammers often use look-alike domains like “.shop”, “.xyz”, or misspellings.
-    </li>
+            <li>
+              <span class="font-bold text-white">✔ Check domain spelling & TLD —</span>
+              Scammers often use look-alike domains like “.shop”, “.xyz”, or misspellings.
+            </li>
 
-    <li>
-      <span class="font-bold text-white">✔ Report suspicious messages —</span>
-      Blocking & reporting reduces future scam attempts.
-    </li>
+            <li>
+              <span class="font-bold text-white">✔ Report suspicious messages —</span>
+              Blocking & reporting reduces future scam attempts.
+            </li>
 
-  </ul>
-</div>
-
-
+          </ul>
+        </div>
 
       </aside>
 
@@ -231,7 +277,45 @@
   </div>
 </main>
 
-<!-- SCRIPT (unchanged logic, improved formatting) -->
+<!-- MATRIX HACKING ANIMATION -->
+<script>
+  const canvas = document.getElementById("hackCanvas");
+  const ctx = canvas.getContext("2d");
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  const chars = "01<>/$#%&*{}=+";
+  const fontSize = 16;
+  const columns = Math.floor(window.innerWidth / fontSize);
+  const drops = Array(columns).fill(1);
+
+  function draw() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.07)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00eaff";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+      let char = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  setInterval(draw, 45);
+</script>
+
+<!-- EXISTING SCRIPT -->
 <script>
   const API_BASE = "https://cybersecurity-code-1.onrender.com";
 
@@ -268,7 +352,6 @@
   document.addEventListener("DOMContentLoaded", () => {
     loadAttacks();
 
-    // URL CHECK
     document.getElementById("analyzeUrlBtn").onclick = async () => {
       let box = document.getElementById("urlResult");
       clearBox(box);
@@ -291,7 +374,6 @@
       }
     };
 
-    // TEXT CHECK
     document.getElementById("analyzeTextBtn").onclick = async () => {
       let box = document.getElementById("textResult");
       clearBox(box);
@@ -314,7 +396,6 @@
       }
     };
 
-    // SAMPLE INPUT
     document.getElementById("sampleBtn").onclick = () => {
       document.getElementById("textInput").value =
         "Your KYC is pending. Confirm immediately at https://upi-verify-update.top/login";
@@ -348,4 +429,3 @@
 
 </body>
 </html>
-
