@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — CyberSec Intelligence</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: linear-gradient(180deg,#060b18,#081020 50%,#050d1a);
+      font-family: Inter, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .glass-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .btn-back {
+      background: rgba(255,255,255,0.08);
+      padding: 10px 18px;
+      border-radius: 10px;
+      color: #cbd5e1;
+      transition: 0.25s;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn-back:hover {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
+  </style>
+</head>
+
+<body class="pt-24 pb-12">
+
+  <!-- HEADER -->
+  <header class="glass-header fixed top-0 left-0 right-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="text-white text-xl font-semibold">CyberSec Intelligence</div>
+      <a href="main-try.html" class="btn-back text-sm">← Back to Dashboard</a>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="max-w-4xl mx-auto px-4">
+
+    <div class="glass-card mb-10">
+      <h1 class="text-3xl font-bold text-white mb-3">About the Project</h1>
+      <p class="text-gray-300 leading-relaxed">
+        CyberSec Intelligence is an AI-driven fraud detection system designed to protect users 
+        from phishing links, scam messages, impersonation attacks, and evolving cyber threats.
+        <br><br>
+        The system uses a <strong>hybrid engine</strong> that combines:
+      </p>
+
+      <ul class="list-disc ml-6 mt-3 text-gray-300">
+        <li>Machine Learning (Random Forest URL classifier)</li>
+        <li>LLM-based semantic fraud detection</li>
+        <li>Rule-based heuristics for domain & text patterns</li>
+        <li>Fusion engine for final risk evaluation</li>
+      </ul>
+    </div>
+
+    <div class="glass-card mb-10">
+      <h2 class="text-2xl font-bold mb-2">Problem We Solve</h2>
+      <p class="text-gray-300 leading-relaxed">
+        Cybercrime continues to grow rapidly — from fake banking pages, refund frauds, KYC scams,
+        to AI-generated phishing messages. Most detection systems fail because scammers constantly
+        evolve their methods.
+        <br><br>
+        Our system adapts by combining <strong>statistical ML</strong> with 
+        <strong>LLM reasoning</strong> to recognize even new, never-seen cyber threats.
+      </p>
+    </div>
+
+    <div class="glass-card mb-10">
+      <h2 class="text-2xl font-bold mb-3">Team Members</h2>
+      <ul class="list-disc ml-6 text-gray-300">
+        <li><strong>Dhoni</strong> — AI/ML Lead, Fusion Engine</li>
+        <li><strong>Ved</strong> — Message Engine, NLP Pipeline</li>
+        <li><strong>Aishwarya</strong> — Frontend UI/UX</li>
+        <li><strong>Bhumit</strong> — Frontend + Backend Integration</li>
+      </ul>
+    </div>
+
+    <div class="glass-card">
+      <h2 class="text-2xl font-bold mb-2">Technologies Used</h2>
+      <ul class="list-disc ml-6 text-gray-300 mt-2">
+        <li>Python • FastAPI</li>
+        <li>Scikit-Learn • Joblib • URL heuristics</li>
+        <li>OpenAI LLM</li>
+        <li>TailwindCSS • HTML • JS</li>
+        <li>Render (Backend Hosting)</li>
+        <li>GitHub Pages (Frontend Deployment)</li>
+      </ul>
+    </div>
+
+    <footer class="text-center mt-12 text-sm text-gray-500">
+      © 2025 CyberSec Intelligence — PKP Hackathon Project
+    </footer>
+
+  </main>
+</body>
+</html>
