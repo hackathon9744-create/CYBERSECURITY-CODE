@@ -5,47 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CyberSec Intelligence — Dashboard</title>
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     :root {
-      --card-bg: rgba(255,255,255,0.06);
-      --card-border: rgba(255,255,255,0.12);
-      --glass-bg: rgba(10,12,18,0.55);
+      --card-bg: rgba(255, 255, 255, 0.07);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --glass-bg: rgba(8, 12, 18, 0.55);
     }
 
     body {
-      background: linear-gradient(180deg,#060b18,#081020,#050d1a);
+      background: linear-gradient(180deg, #050a17, #081020, #040b16);
       font-family: Inter, sans-serif;
       color: #e2e8f0;
+      letter-spacing: 0.1px;
     }
 
     .card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      backdrop-filter: blur(12px);
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px);
+      border-radius: 20px;
+      padding: 24px;
+      transition: 0.25s ease;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+      transform: translateY(-2px);
     }
 
     .result-box {
       white-space: pre-wrap;
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.06);
       border-radius: 14px;
-      padding: 14px;
-      border: 1px solid rgba(255,255,255,0.15);
-      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      margin-top: 14px;
       display: none;
+      line-height: 1.45;
     }
 
-    .muted { color: rgba(200,215,235,0.55); }
+    .muted {
+      color: rgba(210, 225, 245, 0.55);
+    }
 
     .glass-header {
-      backdrop-filter: blur(10px);
-      background: rgba(10,12,20,0.55);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      background: rgba(10, 12, 20, 0.55);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    input, textarea {
+      transition: 0.25s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(6px);
+    }
+
+    input:focus, textarea:focus {
+      border-color: rgba(139, 92, 246, 0.8);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+    }
+
+    button {
+      transition: 0.25s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
     }
   </style>
 </head>
@@ -54,9 +86,10 @@
 
 <!-- HEADER -->
 <header class="glass-header fixed top-0 left-0 right-0 z-50">
-  <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);" class="flex items-center justify-center">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);" 
+           class="flex items-center justify-center shadow-lg shadow-purple-900/40">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path d="M12 2L20 7v6c0 5-4 9-8 9s-8-4-8-9V7l8-5z" fill="white" opacity="0.12"/>
           <path d="M12 3.3 5 7.9v5.5c0 4.3 3 7.8 7 7.8s7-3.5 7-7.8V7.9L12 3.3z"
@@ -72,14 +105,14 @@
 </header>
 
 <!-- CONTENT -->
-<main class="pt-28 pb-12">
-  <div class="max-w-5xl mx-auto px-4">
+<main class="pt-28 pb-14">
+  <div class="max-w-6xl mx-auto px-4">
 
     <!-- HERO -->
-    <section class="mb-6">
+    <section class="mb-7">
       <div class="card">
         <h1 class="text-2xl lg:text-3xl font-bold">Detect phishing URLs & scam messages instantly.</h1>
-        <p class="muted mt-2 max-w-2xl">
+        <p class="muted mt-2 text-sm lg:text-base max-w-2xl leading-relaxed">
           Our hybrid ML + LLM engine analyzes suspicious URLs and text messages, detects impersonation,
           identifies fraud signals, and explains the reasoning clearly.
         </p>
@@ -87,27 +120,27 @@
     </section>
 
     <!-- GRID -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-7">
 
-      <!-- LEFT — ANALYSIS PANELS -->
-      <div class="lg:col-span-2 space-y-6">
+      <!-- LEFT -->
+      <div class="lg:col-span-2 space-y-7">
 
         <!-- URL CHECK -->
         <div class="card">
           <h2 class="text-lg font-semibold mb-1">URL Fraud Check</h2>
-          <p class="muted text-sm">Paste any suspicious URL below to verify authenticity.</p>
+          <p class="muted text-sm">Paste any suspicious URL below.</p>
 
           <div class="mt-4 flex flex-col md:flex-row gap-3">
             <input
               id="urlInput"
               type="url"
               placeholder="https://secure-payments-update.xyz/login"
-              class="flex-1 px-4 py-3 bg-transparent border border-white/10 rounded-lg text-white outline-none placeholder:muted"
+              class="flex-1 px-4 py-3 rounded-lg text-white placeholder:muted outline-none"
             />
 
             <button
               id="analyzeUrlBtn"
-              class="px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-semibold hover:opacity-90"
+              class="px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-semibold shadow-md shadow-indigo-900/40"
             >Check URL</button>
           </div>
 
@@ -117,21 +150,25 @@
         <!-- TEXT CHECK -->
         <div class="card">
           <h2 class="text-lg font-semibold mb-1">Text / Scam Message Detection</h2>
-          <p class="muted text-sm">Check SMS, WhatsApp messages, or emails for scam indicators.</p>
+          <p class="muted text-sm">Check SMS, WhatsApp messages, or emails.</p>
 
           <textarea
             id="textInput"
             rows="5"
             placeholder="Your KYC is pending. Update immediately at https://..."
-            class="w-full mt-3 px-4 py-3 bg-transparent border border-white/10 rounded-lg text-white outline-none placeholder:muted"
+            class="w-full mt-3 px-4 py-3 rounded-lg text-white placeholder:muted outline-none"
           ></textarea>
 
           <div class="mt-4 flex gap-3">
             <button id="analyzeTextBtn"
-              class="bg-teal-600 px-4 py-3 rounded-lg font-semibold hover:opacity-90">Analyze Text</button>
+              class="bg-teal-600 px-4 py-3 rounded-lg font-semibold shadow-md shadow-teal-900/40">
+              Analyze Text
+            </button>
 
             <button id="sampleBtn"
-              class="border border-white/10 px-4 py-3 rounded-lg text-sm muted">Sample Input</button>
+              class="border border-white/15 px-4 py-3 rounded-lg text-sm muted hover:bg-white/5">
+              Sample Input
+            </button>
           </div>
 
           <div id="textResult" class="result-box"></div>
@@ -139,8 +176,8 @@
 
       </div>
 
-      <!-- RIGHT — INFO CARDS -->
-      <aside class="space-y-6">
+      <!-- RIGHT -->
+      <aside class="space-y-7">
 
         <div class="card">
           <h3 class="font-semibold">Recent Cyber Attacks</h3>
@@ -149,7 +186,7 @@
 
         <div class="card">
           <h3 class="font-semibold">Prevention Tips</h3>
-          <ul class="mt-3 list-disc ml-5 text-sm muted">
+          <ul class="mt-3 list-disc ml-5 text-sm muted leading-relaxed">
             <li>Enable 2FA everywhere</li>
             <li>Verify sender identities</li>
             <li>Never trust unknown links</li>
@@ -159,51 +196,52 @@
         </div>
 
       </aside>
+
     </section>
 
     <!-- FOOTER -->
-    <footer class="mt-12 text-center text-gray-500 text-sm">
+    <footer class="mt-14 text-center text-gray-500 text-sm">
       © 2025 CyberSec Intelligence — Built for PKP Hackathon
     </footer>
 
   </div>
 </main>
 
-
-<!-- SCRIPT -->
+<!-- SCRIPT (unchanged logic, improved formatting) -->
 <script>
   const API_BASE = "https://cybersecurity-code-1.onrender.com";
 
-  function show(box, text, err=false){
+  function show(box, text, err=false) {
     box.style.display = "block";
     box.innerText = text;
-    box.style.borderColor = err ? "rgba(255,80,80,0.4)" : "rgba(255,255,255,0.15)";
+    box.style.borderColor = err
+      ? "rgba(255,80,80,0.4)"
+      : "rgba(255,255,255,0.18)";
   }
+
   function clearBox(box){ box.style.display="none"; }
 
   function format(out){
     if(!out) return "No output.";
-
     let lines = [];
+
     if(out.final_risk) lines.push("Risk: " + out.final_risk);
-    if (out.final_score !== undefined) {
-    let pct = Math.round(out.final_score * 100);
-    lines.push("Probability: " + pct + "%");
-}
-    if(out.scam_type) lines.push("Scam: " + out.scam_type);
+    if(out.final_score !== undefined){
+      let pct = Math.round(out.final_score * 100);
+      lines.push("Probability: " + pct + "%");
+    }
+    if(out.scam_type) lines.push("Scam Type: " + out.scam_type);
 
     if(out.explanation){
       lines.push("\nExplanation:");
-      if(Array.isArray(out.explanation)){
-        out.explanation.forEach(r => lines.push("- " + r));
-      } else lines.push(out.explanation);
+      if(Array.isArray(out.explanation)) out.explanation.forEach(r => lines.push("- " + r));
+      else lines.push(out.explanation);
     }
 
     return lines.join("\n");
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-
     loadAttacks();
 
     // URL CHECK
@@ -218,16 +256,12 @@
 
       try {
         let res = await fetch(API_BASE + "/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        text: url,      // send URL as text
-        use_openai: true
-    })
-})
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: url, use_openai: true })
+        });
 
-        let out = await res.json();
-        show(box, format(out), out.final_risk === "High");
+        show(box, format(await res.json()));
       } catch (err){
         show(box, "Server error analyzing URL.", true);
       }
@@ -239,65 +273,54 @@
       clearBox(box);
 
       let text = document.getElementById("textInput").value.trim();
-      if(!text){ show(box, "Please enter text.", true); return;}
+      if(!text){ show(box, "Please enter text.", true); return; }
 
       show(box, "Analyzing text...");
 
       try {
         let res = await fetch(API_BASE + "/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        text: text,    // send message text
-        use_openai: true
-    })
-})
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: text, use_openai: true })
+        });
 
-        let out = await res.json();
-        show(box, format(out), out.final_risk === "High");
+        show(box, format(await res.json()));
       } catch(err){
         show(box, "Server error analyzing text.", true);
       }
     };
 
-    // SAMPLE
+    // SAMPLE INPUT
     document.getElementById("sampleBtn").onclick = () => {
       document.getElementById("textInput").value =
         "Your KYC is pending. Confirm immediately at https://upi-verify-update.top/login";
     };
-
   });
 
   async function loadAttacks() {
-  try {
-    let res = await fetch(API_BASE + "/latest_cyber_attacks");
-    let data = await res.json();
+    try {
+      let res = await fetch(API_BASE + "/latest_cyber_attacks");
+      let data = await res.json();
+      let box = document.getElementById("attackList");
 
-    let box = document.getElementById("attackList");
-    box.innerHTML = ""; // Clear old items
+      box.innerHTML = "";
+      if(!data.attacks || data.attacks.length === 0){
+        box.innerHTML = "<li class='muted'>No recent alerts available.</li>";
+        return;
+      }
 
-    if (!data.attacks || data.attacks.length === 0) {
-      box.innerHTML = "<li class='text-sm muted'>No recent alerts available</li>";
-      return;
+      data.attacks.forEach(title => {
+        let li = document.createElement("li");
+        li.textContent = title;
+        li.className = "text-sm text-gray-300";
+        box.appendChild(li);
+      });
+
+    } catch (err) {
+      console.log("Failed to load cyber attacks:", err);
     }
-
-    data.attacks.forEach(title => {
-      let li = document.createElement("li");
-      li.textContent = title;
-      li.className = "text-sm text-gray-300";
-      box.appendChild(li);
-    });
-
-  } catch (err) {
-    console.log("Failed to load cyber attacks:", err);
-  }
   }
 </script>
 
 </body>
 </html>
-
-
-
-
-
