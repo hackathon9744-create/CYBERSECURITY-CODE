@@ -1,28 +1,227 @@
-🌐 PhishGuard: AI-Powered Fraud Message Detection System
-Built for PKP Mumbai Hackathon 2025
-<p align="center"> <img src="banner.png" alt="PhishGuard Banner" width="800"> </p>
+🔐 CyberSec Intelligence
 
-PhishGuard is a real-time system that detects fraudulent SMS/messages using Machine Learning + Rule-Based Heuristics + Natural Language Features.
-Built by Team Hexa for PKP Mumbai Hackathon 2025.
+AI-Powered Scam & Phishing Detection System
 
-🚀 Features
-🔍 1. Fraud Message Scanner (Frontend UI)
+Made for PKP Hackathon 2025
 
-Paste any suspicious message
+CyberSec Intelligence is a project we built to help people detect fake links, scam messages, and impersonation attempts using a mix of Machine Learning, LLM reasoning, and rule-based analysis.
+Our goal was to create something that actually works in real-world Indian scenarios (KYC scams, refund scams, phishing SMS, etc.)
 
-Detect if it's FAKE or REAL
+We also added a section that shows recent cyber attacks dynamically so users stay up to date.
 
-Shows:
 
-Verdict
+---
 
-Score
+🌟 What the System Can Do
 
-Reasons for classification
+🔍 URL Fraud Check
 
-Indicators (URLs, warnings, brand mismatch, etc.)
+The system can inspect a URL and tell whether it's safe or suspicious.
+We trained a Random Forest model (11k+ phishing URLs) and added extra logic for:
 
-🧠 2. Hybrid Detection System (Backend)
+Fake TLDs
+
+Homoglyph tricks
+
+Brand impersonation
+
+Redirect-based attacks
+
+Suspicious keywords like verify, update, bank, etc.
+
+
+✉️ Scam Message Detection
+
+Just paste any SMS or WhatsApp message.
+The model detects:
+
+KYC scams
+
+Fake refund messages
+
+OTP scams
+
+Urgency/scare tactics
+
+Hidden URLs inside text
+
+AI-generated scam content
+
+
+🤖 LLM Reasoning
+
+Instead of depending only on ML, we use an LLM to analyze:
+
+The tone of the message
+
+Scam writing patterns
+
+Intent (refund, impersonation, urgency, etc.)
+
+Clues that normal ML classifiers usually miss
+
+
+🧠 Fusion Engine
+
+We combine outputs from:
+
+ML model
+
+LLM reasoning
+
+Custom heuristics
+
+URL feature analysis
+
+
+After merging all signals, we give a final “risk level” and explanation.
+
+🌐 Live Cyber Attack Feed
+
+We fetch latest cyberattack alerts directly from CERT-IN RSS feed.
+This keeps the dashboard fresh and relevant.
+
+
+---
+
+🧱 Architecture Overview
+
+Frontend (GitHub Pages)
+        │
+        ▼
+FastAPI Backend (Render)
+        │
+        ├── URL ML Model (Random Forest)
+        ├── Message Analyzer (Rules + LLM)
+        ├── Fusion Engine
+        └── CERT-IN RSS Attack Feed
+        │
+        ▼
+JSON Output → Shown in Dashboard
+
+
+---
+
+🚀 Demo Links
+
+Frontend (GitHub Pages):
+<https://hackathon9744-create.github.io/CYBERSECURITY-CODE/>
+
+---
+
+🛠 Tools We Used
+
+Frontend
+
+HTML, CSS (Tailwind)
+
+Vanilla JavaScript
+
+GitHub Pages for hosting
+
+
+Backend
+
+Python FastAPI
+
+Render for deployment
+
+Joblib + scikit-learn
+
+Requests
+
+OpenAI API (optional, fallback included)
+
+
+ML/AI
+
+Random Forest URL classifier
+
+Message heuristics
+
+LLM-based text reasoning
+
+Hybrid risk scoring
+
+
+
+---
+
+⚙️ How to Run Locally
+
+1. Clone repo
+
+git clone <repo-url>
+cd CYBERSECURITY-CODE
+
+2. Install backend packages
+
+pip install -r requirements.txt
+
+3. Start backend
+
+uvicorn main:app --reload
+
+4. Open frontend
+
+Just open index.html in a browser.
+
+
+---
+
+🔌 Backend API
+
+POST /analyze
+
+Send either a URL or a message.
+
+Example:
+
+{
+  "text": "Your KYC is pending. Verify at https://upi-verify-update.top",
+  "use_openai": true
+}
+
+Response example:
+
+{
+  "final_risk": "High",
+  "final_score": 0.89,
+  "scam_type": "kyc_verification",
+  "explanation": [
+    "Suspicious URL detected",
+    "Urgency tactics",
+    "Brand impersonation pattern"
+  ]
+}
+
+
+---
+
+🌐 GET /latest_cyber_attacks
+
+Returns 4–5 latest cyber alerts from CERT-IN.
+
+{
+  "attacks": [
+    "New phishing campaign targeting SBI users",
+    "Critical security vulnerability patched",
+    "Ransomware group activity spike"
+  ]
+}
+
+
+---
+
+👥 Team
+
+Dhoni – ML + LLM + Fusion Engine
+
+Ved – Message classification system
+
+Aishwarya – Frontend UI
+
+Bhumit – Frontend ↔ Backend integration
 
 ML Model (Trained in Google Colab using joblib)
 
@@ -30,143 +229,7 @@ Heuristic Rules (URL detection, entropy, uppercase ratio, fake links…)
 
 Combined score → final decision
 
-📊 3. Reporting System
 
-Save user reports
-
-Store messages with metadata in a local SQLite database
-
-/reports endpoint shows all previous reports
-
-🌐 4. REST API
-
-FastAPI backend
-
-Fully documented using Swagger UI
-
-🏗️ Tech Stack
-Layer	Technologies
-Frontend	HTML, CSS, JavaScript, Tailwind, Live Server
-Backend	Python, FastAPI, Uvicorn
-ML Model	scikit-learn, numpy, pandas, joblib
-Heuristics	Custom rules (URL detection, entropy, etc.)
-Database	SQLite
-Deployment	Local server / future cloud-ready
-📦 Installation & Setup
-1️⃣ Clone the Repository
-git clone https://github.com/<your-username>/phishguard.git
-cd phishguard
-
-2️⃣ Setup Backend
-Create venv:
-cd backend
-python -m venv venv
-
-Activate venv:
-Windows:
-venv\Scripts\activate
-
-Mac/Linux:
-source venv/bin/activate
-
-Install requirements:
-pip install -r requirements.txt
-
-3️⃣ Place ML Model
-
-Download model.joblib from Google Colab and place it inside:
-
-backend/models/model.joblib
-
-4️⃣ Run the Backend
-python -m uvicorn app:app --reload --port 8000
-
-
-Backend will be available at:
-📌 http://localhost:8000
-
-Swagger Docs:
-📌 http://localhost:8000/docs
-
-5️⃣ Start Frontend
-
-Open a new terminal:
-
-cd frontend
-python -m http.server 5500
-
-
-Open in browser:
-
-📌 http://localhost:5500/frontend.html
-
-🧪 API Documentation
-POST /scan
-
-Detect if a message is fake or real.
-
-Request
-{
-  "text": "Your account is suspended. Verify at http://fake-login.com",
-  "reporter_name": "bhumit"
-}
-
-Response
-{
-  "verdict": "fake",
-  "score": 0.89,
-  "reasons": [
-    "Suspicious words detected",
-    "Link resembles fake domain"
-  ],
-  "indicators": {
-    "has_url": true,
-    "suspicious_phrase_count": 2,
-    "entropy": 4.5
-  }
-}
-
-POST /report
-
-Save user report to database.
-
-GET /reports
-
-Fetch last 100 reports.
-
-🧩 Project Architecture
-             ┌────────────────┐
-             │   Frontend      │
-             │  (HTML / JS)    │
-             └───────┬────────┘
-                     │ fetch()
-                     ▼
-             ┌────────────────┐
-             │   FastAPI      │
-             │   Backend      │
-             └───────┬────────┘
-   ┌─────────────────┼──────────────────┐
-   ▼                 ▼                  ▼
-ML Model        Rule Engine        SQLite DB
-(model.joblib)  (heuristics)      (reports.db)
-
-📷 Screenshots
-
-Replace with your screenshots
-
-/screenshots
-  ├── frontend_scan.png
-  ├── fake_message_result.png
-  ├── safe_message_result.png
-  ├── swagger_docs.png
-
-👨‍💻 Team HEXA — Developers
-Name	Role
-Bhumit Gupta	Backend Developer
-Ved	ML Engineer
-Dhoni	ML Engineer
-Aishwarya	UI/UX Designer
-+ Others (If any)	
 🏆 Built for PKP Mumbai Hackathon 2025
 
 This project was developed in under 24 hours for PKP Mumbai Hack 2025, focusing on Cybersecurity, AI, and Public Safety.
@@ -177,11 +240,8 @@ Host backend on cloud (Render, Railway, AWS)
 
 Train advanced transformer-based models
 
-Create a Chrome extension
+Create a Chrome extensions.
 
-Add QR-fraud detection
-
-Mobile app version (React Native)
 
 📜 License
 
