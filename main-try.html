@@ -186,7 +186,10 @@
 
     let lines = [];
     if(out.final_risk) lines.push("Risk: " + out.final_risk);
-    if(out.final_score !== undefined) lines.push("Score: " + out.final_score);
+    if (out.final_score !== undefined) {
+    let pct = Math.round(out.final_score * 100);
+    lines.push("Probability: " + pct + "%");
+}
     if(out.scam_type) lines.push("Scam: " + out.scam_type);
 
     if(out.explanation){
@@ -293,6 +296,7 @@
 
 </body>
 </html>
+
 
 
 
