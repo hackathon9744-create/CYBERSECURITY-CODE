@@ -1,342 +1,267 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberSec Intelligence Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CyberSec Intelligence — Dashboard</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  <style>
+    :root {
+      --card-bg: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.12);
+      --glass-bg: rgba(10,12,18,0.55);
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            position: relative;
-            background: #0f172b;
-            color: #f1f1f1;
-        }
+    body {
+      background: linear-gradient(180deg,#060b18,#081020,#050d1a);
+      font-family: Inter, sans-serif;
+      color: #e2e8f0;
+    }
 
-        /* MATRIX RAIN CANVAS */
-        #matrixCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
+    .card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(12px);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
 
-        /* Navbar */
-        nav {
-            background: linear-gradient(90deg, #1e3a8a, #6d28d9);
-            z-index: 50;
-        }
+    .result-box {
+      white-space: pre-wrap;
+      background: rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.15);
+      margin-top: 12px;
+      display: none;
+    }
 
-        nav a {
-            font-weight: 600;
-            position: relative;
-            transition: all 0.3s ease;
-        }
+    .muted { color: rgba(200,215,235,0.55); }
 
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0%;
-            height: 2px;
-            background: #14b8a6;
-            transition: 0.3s;
-        }
-
-        nav a:hover::after {
-            width: 100%;
-        }
-
-        /* Section hover animation */
-        .section-card {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s ease;
-        }
-
-        .section-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 20px rgba(20, 184, 166, 0.5);
-        }
-
-        /* Moving gradient overlay */
-        .gradient-overlay {
-    display: none; /* Disable animated gradient for clean UI */
-}
-
-        @keyframes slide {
-            0% {
-                left: -100%;
-            }
-
-            100% {
-                left: 100%;
-            }
-        }
-
-       .result-box {
-    display: none;
-    margin-top: 1rem;
-    padding: 1.25rem;
-    border-radius: 1rem;
-    backdrop-blur: 12px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(20,20,20,0.45);
-    font-size: 0.95rem;
-    white-space: pre-wrap;
-    line-height: 1.5;
-}
-
-
-        /* Footer links */
-        footer a {
-            color: #93c5fd;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    .glass-header {
+      backdrop-filter: blur(10px);
+      background: rgba(10,12,20,0.55);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+  </style>
 </head>
 
-<body class="min-h-screen text-gray-100 relative">
+<body>
 
-    <!-- MATRIX BACKGROUND -->
-    <canvas id="matrixCanvas"></canvas>
-
-    <!-- Navbar -->
-    <header class="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-indigo-900 to-purple-700 shadow-lg">
-    <nav class="flex justify-between items-center px-6 py-4">
-        <div class="text-white text-2xl font-bold tracking-wide">
-            CyberSec Intelligence
-        </div>
-        <div class="hidden md:flex text-white opacity-80 tracking-wide">
-            AI Fraud Detection Dashboard
-        </div>
-    </nav>
+<!-- HEADER -->
+<header class="glass-header fixed top-0 left-0 right-0 z-50">
+  <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);" class="flex items-center justify-center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L20 7v6c0 5-4 9-8 9s-8-4-8-9V7l8-5z" fill="white" opacity="0.12"/>
+          <path d="M12 3.3 5 7.9v5.5c0 4.3 3 7.8 7 7.8s7-3.5 7-7.8V7.9L12 3.3z"
+            stroke="white" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="text-white text-xl font-semibold tracking-wide">CyberSec Intelligence</div>
+        <div class="text-xs muted">AI-Powered Scam Detection</div>
+      </div>
+    </div>
+  </div>
 </header>
-    
 
-    <main class="pt-28 px-4 md:px-16 relative z-10 space-y-10">
+<!-- CONTENT -->
+<main class="pt-28 pb-12">
+  <div class="max-w-5xl mx-auto px-4">
 
-        <!-- URL Fraud Check -->
-        <section id="url-check" class="section-card relative">
-            <div class="gradient-overlay"></div>
-            <div class="bg-white/10 p-6 rounded-2xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.3)] backdrop-blur-xl relative z-10">
-                <h2 class="text-2xl font-bold text-indigo-300 mb-2">URL Fraud Check</h2>
-<div class="w-full h-px bg-white/10 mb-4"></div>
-                <form id="urlForm">
-                    <input id="urlInput" type="url" placeholder="https://example.com"
-                        class="w-full px-4 py-2 bg-slate-900/60 border border-white/20 rounded-lg text-white placeholder-gray-400">
-                    <button class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Check</button>
-                </form>
-                <div id="urlResult" class="result-box"></div>
-            </div>
-        </section>
+    <!-- HERO -->
+    <section class="mb-6">
+      <div class="card">
+        <h1 class="text-2xl lg:text-3xl font-bold">Detect phishing URLs & scam messages instantly.</h1>
+        <p class="muted mt-2 max-w-2xl">
+          Our hybrid ML + LLM engine analyzes suspicious URLs and text messages, detects impersonation,
+          identifies fraud signals, and explains the reasoning clearly.
+        </p>
+      </div>
+    </section>
 
-        <div class="h-10"></div>
+    <!-- GRID -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- Text Scam Detection -->
-        <section id="text-check" class="section-card relative">
-            <div class="gradient-overlay"></div>
-            <div class="bg-white/10 p-6 rounded-2xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.3)] backdrop-blur-xl relative z-10">
-                <h2 class="text-2xl font-bold text-indigo-300 mb-2">Text Messages/SMS Fraud Check</h2>
-<div class="w-full h-px bg-white/10 mb-4"></div>
-                <form id="textForm">
-                    <textarea id="textInput" rows="6" placeholder="Paste suspicious text..."
-                        class="w-full px-4 py-2 bg-slate-900/60 border border-white/20 rounded-lg text-white placeholder-gray-400"></textarea>
-                    <button class="mt-4 w-full bg-teal-500 hover:bg-teal-400 py-2 rounded-lg text-white font-semibold">Analyze</button>
-                </form>
-                <div id="textResult" class="result-box"></div>
-            </div>
-        </section>
+      <!-- LEFT — ANALYSIS PANELS -->
+      <div class="lg:col-span-2 space-y-6">
 
-   <div class="mt-10"></div>   
-        <!-- Recent Cyber Attacks -->
-        <section id="recent-attacks" class="section-card relative">
-            <div class="gradient-overlay"></div>
-            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md relative z-10">
-                <h2 class="text-xl font-semibold text-red-400 mb-3">Recent Cyber Attacks</h2>
-                <ul class="list-disc list-inside space-y-2">
-                    <li>SolarWinds supply chain attack – 2020</li>
-                    <li>Colonial Pipeline ransomware attack – 2021</li>
-                    <li>Facebook data breach – 2019</li>
-                    <li>JBS ransomware attack – 2021</li>
-                </ul>
-            </div>
-        </section>
+        <!-- URL CHECK -->
+        <div class="card">
+          <h2 class="text-lg font-semibold mb-1">URL Fraud Check</h2>
+          <p class="muted text-sm">Paste any suspicious URL below to verify authenticity.</p>
 
-  <div class="mt-10"></div>
-        <!-- Prevention Steps -->
-        <section id="prevention" class="section-card relative">
-            <div class="gradient-overlay"></div>
-            <div class="bg-white/10 p-6 rounded-xl border border-white/20 shadow-lg backdrop-blur-md relative z-10">
-                <h2 class="text-xl font-semibold text-green-400 mb-3">Steps for Prevention</h2>
-                <ul class="list-disc list-inside space-y-2">
-                    <li>Keep software updated</li>
-                    <li>Use strong passwords & 2FA</li>
-                    <li>Be cautious with links & attachments</li>
-                    <li>Regular backups</li>
-                    <li>Security awareness training</li>
-                </ul>
-            </div>
-        </section>
-    </main>
+          <div class="mt-4 flex flex-col md:flex-row gap-3">
+            <input
+              id="urlInput"
+              type="url"
+              placeholder="https://secure-payments-update.xyz/login"
+              class="flex-1 px-4 py-3 bg-transparent border border-white/10 rounded-lg text-white outline-none placeholder:muted"
+            />
 
-    <!-- Footer -->
-    <footer class="mt-20 text-center text-gray-400 text-sm pb-8">
-    © 2025 CyberSec Intelligence — Built with AI + ML
-</footer>
+            <button
+              id="analyzeUrlBtn"
+              class="px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-semibold hover:opacity-90"
+            >Check URL</button>
+          </div>
 
-    <script>
+          <div id="urlResult" class="result-box"></div>
+        </div>
 
-        /* URL & Text Handling */
-        const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
+        <!-- TEXT CHECK -->
+        <div class="card">
+          <h2 class="text-lg font-semibold mb-1">Text / Scam Message Detection</h2>
+          <p class="muted text-sm">Check SMS, WhatsApp messages, or emails for scam indicators.</p>
 
-        async function handleUrlSubmit(e) {
-            e.preventDefault();
-            const url = document.getElementById("urlInput").value;
-            const box = document.getElementById("urlResult");
-            box.style.display = "block";
-            box.textContent = "🔍 Checking URL...";
+          <textarea
+            id="textInput"
+            rows="5"
+            placeholder="Your KYC is pending. Update immediately at https://..."
+            class="w-full mt-3 px-4 py-3 bg-transparent border border-white/10 rounded-lg text-white outline-none placeholder:muted"
+          ></textarea>
 
-            try {
-                const r = await fetch(BACKEND_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: url, use_openai: true })
-                });
-                const out = await r.json();
-               (function () {
-    const colorClasses = [
-        "bg-red-500/20","text-red-300","border-red-500/40",
-        "bg-yellow-500/20","text-yellow-300","border-yellow-500/40",
-        "bg-teal-500/20","text-teal-300","border-teal-500/40"
-    ];
-    box.classList.remove(...colorClasses);
+          <div class="mt-4 flex gap-3">
+            <button id="analyzeTextBtn"
+              class="bg-teal-600 px-4 py-3 rounded-lg font-semibold hover:opacity-90">Analyze Text</button>
 
-    const riskRaw = out?.final_risk?.toString().trim().toLowerCase() || "";
-    const explanationText = Array.isArray(out.explanation) ? out.explanation.join(" ") : out.explanation;
+            <button id="sampleBtn"
+              class="border border-white/10 px-4 py-3 rounded-lg text-sm muted">Sample Input</button>
+          </div>
 
-    if (riskRaw.includes("high")) {
-        box.classList.add("bg-red-500/20","text-red-300","border-red-500/40");
-    } else if (riskRaw.includes("medium")) {
-        box.classList.add("bg-yellow-500/20","text-yellow-300","border-yellow-500/40");
-    } else {
-        box.classList.add("bg-teal-500/20","text-teal-300","border-teal-500/40");
+          <div id="textResult" class="result-box"></div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT — INFO CARDS -->
+      <aside class="space-y-6">
+
+        <div class="card">
+          <h3 class="font-semibold">Recent Cyber Attacks</h3>
+          <ul class="mt-3 list-disc ml-5 text-sm muted">
+            <li>SolarWinds supply chain breach — 2020</li>
+            <li>Facebook data leak — 2019</li>
+            <li>JBS ransomware — 2021</li>
+            <li>Global phishing wave — 2024</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 class="font-semibold">Prevention Tips</h3>
+          <ul class="mt-3 list-disc ml-5 text-sm muted">
+            <li>Enable 2FA everywhere</li>
+            <li>Verify sender identities</li>
+            <li>Never trust unknown links</li>
+            <li>Check domain spelling & TLD</li>
+            <li>Report suspicious messages</li>
+          </ul>
+        </div>
+
+      </aside>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 text-center text-gray-500 text-sm">
+      © 2025 CyberSec Intelligence — Built for PKP Hackathon
+    </footer>
+
+  </div>
+</main>
+
+
+<!-- SCRIPT -->
+<script>
+  const API_BASE = ""; // "" → same origin; or set to your Render URL
+
+  function show(box, text, err=false){
+    box.style.display = "block";
+    box.innerText = text;
+    box.style.borderColor = err ? "rgba(255,80,80,0.4)" : "rgba(255,255,255,0.15)";
+  }
+  function clearBox(box){ box.style.display="none"; }
+
+  function format(out){
+    if(!out) return "No output.";
+
+    let lines = [];
+    if(out.final_risk) lines.push("Risk: " + out.final_risk);
+    if(out.final_score !== undefined) lines.push("Score: " + out.final_score);
+    if(out.scam_type) lines.push("Scam: " + out.scam_type);
+
+    if(out.explanation){
+      lines.push("\nExplanation:");
+      if(Array.isArray(out.explanation)){
+        out.explanation.forEach(r => lines.push("- " + r));
+      } else lines.push(out.explanation);
     }
 
-    box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${explanationText}`;
-})();
+    return lines.join("\n");
+  }
 
-            } catch {
-                box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
-                box.textContent = "❌ Backend unreachable.";
-            }
-        }
+  document.addEventListener("DOMContentLoaded", () => {
 
-        async function handleTextSubmit(e) {
-            e.preventDefault();
-            const text = document.getElementById("textInput").value;
-            const box = document.getElementById("textResult");
-            box.style.display = "block";
-            box.textContent = "🔍 Analyzing text...";
+    // URL CHECK
+    document.getElementById("analyzeUrlBtn").onclick = async () => {
+      let box = document.getElementById("urlResult");
+      clearBox(box);
 
-            try {
-                const r = await fetch(BACKEND_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: text, use_openai: true })
-                });
-                const out = await r.json();
-               (function () {
-    const colorClasses = [
-        "bg-red-500/20","text-red-300","border-red-500/40",
-        "bg-yellow-500/20","text-yellow-300","border-yellow-500/40",
-        "bg-teal-500/20","text-teal-300","border-teal-500/40"
-    ];
-    box.classList.remove(...colorClasses);
+      let url = document.getElementById("urlInput").value.trim();
+      if(!url){ show(box, "Please enter a URL.", true); return; }
 
-    const riskRaw = out?.final_risk?.toString().trim().toLowerCase() || "";
-    const explanationText = Array.isArray(out.explanation) ? out.explanation.join(" ") : out.explanation;
+      show(box, "Analyzing URL...");
 
-    if (riskRaw.includes("high")) {
-        box.classList.add("bg-red-500/20","text-red-300","border-red-500/40");
-    } else if (riskRaw.includes("medium")) {
-        box.classList.add("bg-yellow-500/20","text-yellow-300","border-yellow-500/40");
-    } else {
-        box.classList.add("bg-teal-500/20","text-teal-300","border-teal-500/40");
-    }
-
-    box.textContent = `Risk: ${out.final_risk}\nScam: ${out.scam_type}\n\n${explanationText}`;
-})();
-
-            } catch {
-                box.className = "result-box block bg-red-500/20 text-red-300 border-red-500/40";
-                box.textContent = "❌ Backend unreachable.";
-            }
-        }
-
-        document.getElementById("urlForm").addEventListener("submit", handleUrlSubmit);
-        document.getElementById("textForm").addEventListener("submit", handleTextSubmit);
-
-        /* MATRIX RAIN EFFECT */
-        const canvas = document.getElementById("matrixCanvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const letters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        const fontSize = 16;
-        const columns = Math.floor(canvas.width / fontSize);
-        const drops = Array(columns).fill(1);
-
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#0ff';
-            ctx.font = fontSize + "px monospace";
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = letters.charAt(Math.floor(Math.random() * letters.length));
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-
-                drops[i]++;
-            }
-        }
-
-        setInterval(drawMatrix, 50);
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+      try {
+        let res = await fetch(API_BASE + "/analyze_url", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ url })
         });
 
-    </script>
+        let out = await res.json();
+        show(box, format(out), out.final_risk === "High");
+      } catch (err){
+        show(box, "Server error analyzing URL.", true);
+      }
+    };
+
+    // TEXT CHECK
+    document.getElementById("analyzeTextBtn").onclick = async () => {
+      let box = document.getElementById("textResult");
+      clearBox(box);
+
+      let text = document.getElementById("textInput").value.trim();
+      if(!text){ show(box, "Please enter text.", true); return;}
+
+      show(box, "Analyzing text...");
+
+      try {
+        let res = await fetch(API_BASE + "/analyze_message", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ text })
+        });
+
+        let out = await res.json();
+        show(box, format(out), out.final_risk === "High");
+      } catch(err){
+        show(box, "Server error analyzing text.", true);
+      }
+    };
+
+    // SAMPLE
+    document.getElementById("sampleBtn").onclick = () => {
+      document.getElementById("textInput").value =
+        "Your KYC is pending. Confirm immediately at https://upi-verify-update.top/login";
+    };
+
+  });
+</script>
+
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
