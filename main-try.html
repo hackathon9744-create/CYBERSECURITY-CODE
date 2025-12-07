@@ -9,101 +9,77 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-  :root {
-    --glass-bg: rgba(10,12,18,0.55);
-    --card-bg: rgba(255,255,255,0.07);
-    --card-border: rgba(255,255,255,0.12);
-    --accent: #7c3aed;
-    --accent2: #4f46e5;
-    --text-muted: rgba(220,230,250,0.55);
-  }
+    :root {
+      --card-bg: rgba(255, 255, 255, 0.07);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --glass-bg: rgba(8, 12, 18, 0.55);
+    }
 
-  /* Background */
-  body {
-    background: radial-gradient(circle at 25% 20%, #101827, #050a15 70%);
-    font-family: Inter, sans-serif;
-    color: #e2e8f0;
-    scroll-behavior: smooth;
-  }
+    body {
+      background: linear-gradient(180deg, #050a17, #081020, #040b16);
+      font-family: Inter, sans-serif;
+      color: #e2e8f0;
+      letter-spacing: 0.1px;
+    }
 
-  /* Header */
-  .glass-header {
-    background: rgba(10,12,20,0.55);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-  }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px);
+      border-radius: 20px;
+      padding: 24px;
+      transition: 0.25s ease;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+    }
 
-  /* Card */
-  .card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    backdrop-filter: blur(14px);
-    border-radius: 20px;
-    padding: 24px;
-    transition: all 0.25s ease;
-  }
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
-    border-color: rgba(255,255,255,0.2);
-  }
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+      transform: translateY(-2px);
+    }
 
-  /* Inputs & Textarea */
-  input, textarea {
-    transition: border 0.25s ease, background 0.25s ease;
-  }
+    .result-box {
+      white-space: pre-wrap;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      margin-top: 14px;
+      display: none;
+      line-height: 1.45;
+    }
 
-  input:focus, textarea:focus {
-    border-color: var(--accent);
-    background: rgba(255,255,255,0.08);
-  }
+    .muted {
+      color: rgba(210, 225, 245, 0.55);
+    }
 
-  /* Buttons */
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    transition: 0.3s ease;
-    box-shadow: 0 0 20px rgba(124,58,237,0.35);
-  }
-  .btn-primary:hover {
-    filter: brightness(1.15);
-    transform: translateY(-1px);
-  }
+    .glass-header {
+      backdrop-filter: blur(12px);
+      background: rgba(10, 12, 20, 0.55);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
 
-  .btn-secondary:hover {
-    border-color: var(--accent);
-    color: #fff;
-  }
+    input, textarea {
+      transition: 0.25s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(6px);
+    }
 
-  /* Result Box */
-  .result-box {
-    white-space: pre-wrap;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-left: 4px solid var(--accent);
-    border-radius: 12px;
-    padding: 16px;
-    margin-top: 16px;
-    display: none;
-    box-shadow: 0 8px 26px rgba(0,0,0,0.3);
-  }
+    input:focus, textarea:focus {
+      border-color: rgba(139, 92, 246, 0.8);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+    }
 
-  .muted {
-    color: var(--text-muted);
-  }
+    button {
+      transition: 0.25s ease;
+    }
 
-  /* Glow Animation */
-  @keyframes subtle-glow {
-    0% { box-shadow: 0 0 12px rgba(124,58,237,0.25); }
-    50% { box-shadow: 0 0 18px rgba(124,58,237,0.45); }
-    100% { box-shadow: 0 0 12px rgba(124,58,237,0.25); }
-  }
-
-  .glow {
-    animation: subtle-glow 3s infinite ease-in-out;
-  }
-</style>
-
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+  </style>
 </head>
 
 <body>
@@ -348,4 +324,3 @@
 
 </body>
 </html>
-
