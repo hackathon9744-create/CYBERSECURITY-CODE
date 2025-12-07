@@ -217,11 +217,14 @@
       show(box, "Analyzing URL...");
 
       try {
-        let res = await fetch(API_BASE + "/analyze_url", {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({ url })
-        });
+        let res = await fetch(API_BASE + "/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        text: url,      // send URL as text
+        use_openai: true
+    })
+})
 
         let out = await res.json();
         show(box, format(out), out.final_risk === "High");
@@ -241,11 +244,14 @@
       show(box, "Analyzing text...");
 
       try {
-        let res = await fetch(API_BASE + "/analyze_message", {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({ text })
-        });
+        let res = await fetch(API_BASE + "/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        text: text,    // send message text
+        use_openai: true
+    })
+})
 
         let out = await res.json();
         show(box, format(out), out.final_risk === "High");
@@ -265,5 +271,6 @@
 
 </body>
 </html>
+
 
 
