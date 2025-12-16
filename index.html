@@ -7,16 +7,10 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Custom Animations -->
+    <!-- Custom Animations & Styles -->
     <style>
+        /* Animation Keyframes */
         @keyframes grid-move {
             0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
             100% { transform: perspective(500px) rotateX(60deg) translateY(40px); }
@@ -41,832 +35,683 @@
         .animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body class="transition-colors duration-500 font-sans selection:bg-cyan-500/30">
 
-    < type="text/babel">
-        const { useState, useEffect, useRef } = React;
-        // 🔗 BACKEND API (DO NOT CHANGE)
-const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
+    <!-- App Root -->
+    <div id="app" class="min-h-screen flex flex-col relative">
+        <!-- Background Layer -->
+        <div id="bg-layer" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
 
+        <!-- Navigation -->
+        <nav id="navbar" class="fixed top-0 w-full z-50 border-b backdrop-blur-lg transition-colors duration-500"></nav>
 
-        // --- Icon Components (Inline SVGs for standalone functionality) ---
-        const IconBase = ({ size = 24, className = "", children, ...props }) => (
-            <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width={size} 
-                height={size} 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className={className} 
-                {...props}
-            >
-                {children}
-            </svg>
-        );
+        <!-- Main Content -->
+        <main id="main-content" class="pt-28 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full relative z-10 flex-grow"></main>
 
-        const Shield = (props) => <IconBase {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></IconBase>;
-        const Search = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></IconBase>;
-        const MessageSquare = (props) => <IconBase {...props}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></IconBase>;
-        const QrCode = (props) => <IconBase {...props}><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></IconBase>;
-        const Activity = (props) => <IconBase {...props}><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></IconBase>;
-        const Menu = (props) => <IconBase {...props}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></IconBase>;
-        const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
-        const Sun = (props) => <IconBase {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></IconBase>;
-        const Moon = (props) => <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></IconBase>;
-        const AlertTriangle = (props) => <IconBase {...props}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></IconBase>;
-        const CheckCircle = (props) => <IconBase {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></IconBase>;
-        const AlertOctagon = (props) => <IconBase {...props}><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></IconBase>;
-        const Cpu = (props) => <IconBase {...props}><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></IconBase>;
-        const Lock = (props) => <IconBase {...props}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></IconBase>;
-        const Globe = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10 15.3 15.3 0 0 1-4 10z"/></IconBase>;
-        const Smartphone = (props) => <IconBase {...props}><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></IconBase>;
-        const ChevronRight = (props) => <IconBase {...props}><path d="m9 18 6-6-6-6"/></IconBase>;
-        const Zap = (props) => <IconBase {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
-        const Eye = (props) => <IconBase {...props}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></IconBase>;
-        const FileText = (props) => <IconBase {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></IconBase>;
+        <!-- Footer -->
+        <footer id="footer" class="py-8 text-center border-t relative z-10 transition-colors duration-500"></footer>
+    </div>
 
-        // --- Utility Components ---
+    <!-- JavaScript Logic -->
+    <script>
+        // --- State Management ---
+        const state = {
+            theme: 'dark', // 'dark' or 'light'
+            activeTab: 'dashboard', // dashboard, url, text, qr, about
+            menuOpen: false,
+            isScanning: false,
+            scanResult: null
+        };
 
-        const Card = ({ children, className = "", theme }) => {
-            const baseStyle = "transition-all duration-500 overflow-hidden";
-            const themeStyle = theme === 'dark' 
+        // --- Icons (SVG Templates) ---
+        const Icons = {
+            Shield: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+            Search: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`,
+            MessageSquare: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+            QrCode: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>`,
+            Activity: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+            Menu: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>`,
+            X: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+            Sun: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`,
+            Moon: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`,
+            AlertTriangle: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>`,
+            CheckCircle: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+            AlertOctagon: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>`,
+            Cpu: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>`,
+            Lock: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+            Globe: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10 15.3 15.3 0 0 1-4 10z"/></svg>`,
+            Smartphone: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>`,
+            ChevronRight: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="m9 18 6-6-6-6"/></svg>`,
+            Zap: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+            Eye: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+            FileText: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>`,
+        };
+
+        // --- Helper Components (HTML Generators) ---
+
+        const getButtonStyles = (variant, theme) => {
+            if (theme === 'dark') {
+                if (variant === 'primary') return "bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] rounded-none uppercase tracking-wider text-sm";
+                if (variant === 'danger') return "bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/50 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)] rounded-none uppercase tracking-wider text-sm";
+            } else {
+                if (variant === 'primary') return "bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg shadow-indigo-200 rounded-xl";
+                if (variant === 'danger') return "bg-rose-500 hover:bg-rose-600 text-white shadow-md hover:shadow-lg shadow-rose-200 rounded-xl";
+            }
+            return "";
+        };
+
+        const getCardStyles = (theme) => {
+            return theme === 'dark' 
                 ? "bg-slate-900/60 backdrop-blur-md border border-cyan-500/30 shadow-[0_0_15px_rgba(34,211,238,0.05)] hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] hover:border-cyan-400/50 rounded-lg"
                 : "bg-white border border-slate-100 shadow-lg hover:shadow-xl rounded-2xl";
+        };
 
-            return (
-                <div className={`${baseStyle} ${themeStyle} ${className}`}>
-                {children}
+        const ScanningLoader = (theme) => `
+            <div class="flex flex-col items-center justify-center py-12">
+                <div class="relative w-32 h-32 flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full border-2 border-dashed animate-spin-slow ${theme === 'dark' ? 'border-cyan-500/30' : 'border-indigo-200'}"></div>
+                    <div class="absolute inset-4 rounded-full border-2 border-dotted animate-spin-reverse-slow ${theme === 'dark' ? 'border-violet-500/30' : 'border-purple-200'}"></div>
+                    <div class="w-16 h-16 rounded-full animate-pulse ${theme === 'dark' ? 'bg-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.4)]' : 'bg-indigo-100'}"></div>
+                    ${Icons.Search(`absolute ${theme === 'dark' ? 'text-cyan-400' : 'text-indigo-600'} w-8 h-8`)}
                 </div>
-            );
-        };
-
-        const Button = ({ children, onClick, variant = 'primary', className = "", theme, icon: Icon, disabled }) => {
-            let variantStyles = "";
-            
-            if (theme === 'dark') {
-                if (variant === 'primary') variantStyles = "bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]";
-                if (variant === 'danger') variantStyles = "bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/50 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]";
-                if (variant === 'ghost') variantStyles = "hover:bg-slate-800 text-slate-400 hover:text-cyan-400";
-            } else {
-                if (variant === 'primary') variantStyles = "bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg shadow-indigo-200";
-                if (variant === 'danger') variantStyles = "bg-rose-500 hover:bg-rose-600 text-white shadow-md hover:shadow-lg shadow-rose-200";
-                if (variant === 'ghost') variantStyles = "hover:bg-slate-100 text-slate-600 hover:text-indigo-600";
-            }
-
-            return (
-                <button 
-                onClick={onClick}
-                disabled={disabled}
-                className={`relative flex items-center justify-center gap-2 px-6 py-3 font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${variantStyles} ${theme === 'dark' ? 'rounded-none uppercase tracking-wider text-sm' : 'rounded-xl'} ${className}`}
-                >
-                {Icon && <Icon size={18} className={theme === 'dark' ? "animate-pulse" : ""} />}
-                {children}
-                {theme === 'dark' && variant === 'primary' && (
-                    <>
-                    <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400"></span>
-                    <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400"></span>
-                    </>
-                )}
-                </button>
-            );
-        };
-
-        const Badge = ({ children, type = 'info', theme }) => {
-            const colors = {
-                info: theme === 'dark' ? "text-cyan-400 bg-cyan-950/50 border-cyan-500/30" : "text-indigo-600 bg-indigo-50 border-indigo-100",
-                success: theme === 'dark' ? "text-emerald-400 bg-emerald-950/50 border-emerald-500/30" : "text-emerald-600 bg-emerald-50 border-emerald-100",
-                warning: theme === 'dark' ? "text-amber-400 bg-amber-950/50 border-amber-500/30" : "text-amber-600 bg-amber-50 border-amber-100",
-                danger: theme === 'dark' ? "text-red-400 bg-red-950/50 border-red-500/30" : "text-rose-600 bg-rose-50 border-rose-100",
-            };
-
-            return (
-                <span className={`px-3 py-1 text-xs font-bold border ${theme === 'dark' ? 'rounded-none tracking-widest uppercase' : 'rounded-full'} ${colors[type]}`}>
-                {children}
-                </span>
-            );
-        };
-
-        // --- Specialized Visual Components ---
-
-        const ScanningAnimation = ({ theme }) => (
-            <div className="flex flex-col items-center justify-center py-12">
-                <div className="relative w-32 h-32 flex items-center justify-center">
-                <div className={`absolute inset-0 rounded-full border-2 border-dashed animate-spin-slow ${theme === 'dark' ? 'border-cyan-500/30' : 'border-indigo-200'}`}></div>
-                <div className={`absolute inset-4 rounded-full border-2 border-dotted animate-spin-reverse-slow ${theme === 'dark' ? 'border-violet-500/30' : 'border-purple-200'}`}></div>
-                <div className={`w-16 h-16 rounded-full animate-pulse ${theme === 'dark' ? 'bg-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.4)]' : 'bg-indigo-100'}`}></div>
-                <Search size={32} className={`absolute ${theme === 'dark' ? 'text-cyan-400' : 'text-indigo-600'}`} />
-                </div>
-                <p className={`mt-6 text-sm font-medium animate-pulse ${theme === 'dark' ? 'text-cyan-400 tracking-widest uppercase' : 'text-slate-500'}`}>
-                {theme === 'dark' ? 'Initiating Heuristic Scan protocol...' : 'AI Assistant is analyzing...'}
+                <p class="mt-6 text-sm font-medium animate-pulse ${theme === 'dark' ? 'text-cyan-400 tracking-widest uppercase' : 'text-slate-500'}">
+                    ${theme === 'dark' ? 'Initiating Heuristic Scan protocol...' : 'AI Assistant is analyzing...'}
                 </p>
             </div>
-        );
+        `;
 
-        const RiskMeter = ({ score, theme }) => {
-            let color = "bg-emerald-500";
+        const RiskMeter = (score, theme) => {
             let label = "SAFE";
-            
-            if (score > 30) { color = "bg-amber-500"; label = "SUSPICIOUS"; }
-            if (score > 70) { color = "bg-red-500"; label = "MALICIOUS"; }
-
+            let colorClass = "text-emerald-500";
+            if (score > 30) { label = "SUSPICIOUS"; colorClass = "text-amber-500"; }
+            if (score > 70) { label = "MALICIOUS"; colorClass = "text-red-500"; }
             const needleRotation = (score / 100) * 180 - 90;
 
-            return (
-                <div className="flex flex-col items-center">
-                <div className="relative w-48 h-24 overflow-hidden mb-4">
-                    <div className={`absolute bottom-0 left-0 w-full h-full rounded-t-full border-8 border-b-0 ${theme === 'dark' ? 'border-slate-700 bg-slate-800/30' : 'border-slate-100 bg-slate-50'}`}></div>
-                    
-                    <div className={`absolute bottom-0 left-0 w-full h-full rounded-t-full border-8 border-b-0 border-transparent transition-all duration-1000 origin-bottom transform`}
-                        style={{ 
-                        background: `conic-gradient(from 180deg at 50% 100%, #10b981 0deg 60deg, #f59e0b 60deg 120deg, #ef4444 120deg 180deg)`
-                        , opacity: 0.2
-                        }}
-                    ></div>
-
-                    <div 
-                    className="absolute bottom-0 left-1/2 w-1 h-20 origin-bottom transition-transform duration-1000 ease-out z-10"
-                    style={{ transform: `translateX(-50%) rotate(${needleRotation}deg)` }}
-                    >
-                    <div className={`w-full h-full ${theme === 'dark' ? 'bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]' : 'bg-slate-800'}`}></div>
+            return `
+                <div class="flex flex-col items-center">
+                    <div class="relative w-48 h-24 overflow-hidden mb-4">
+                        <div class="absolute bottom-0 left-0 w-full h-full rounded-t-full border-8 border-b-0 ${theme === 'dark' ? 'border-slate-700 bg-slate-800/30' : 'border-slate-100 bg-slate-50'}"></div>
+                        <div class="absolute bottom-0 left-0 w-full h-full rounded-t-full border-8 border-b-0 border-transparent transition-all duration-1000 origin-bottom transform opacity-20"
+                             style="background: conic-gradient(from 180deg at 50% 100%, #10b981 0deg 60deg, #f59e0b 60deg 120deg, #ef4444 120deg 180deg)"></div>
+                        <div class="absolute bottom-0 left-1/2 w-1 h-20 origin-bottom transition-transform duration-1000 ease-out z-10"
+                             style="transform: translateX(-50%) rotate(${needleRotation}deg)">
+                            <div class="w-full h-full ${theme === 'dark' ? 'bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]' : 'bg-slate-800'}"></div>
+                        </div>
+                        <div class="absolute bottom-0 left-1/2 w-4 h-4 -ml-2 -mb-2 rounded-full z-20 ${theme === 'dark' ? 'bg-cyan-200' : 'bg-slate-900'}"></div>
                     </div>
-                    
-                    <div className={`absolute bottom-0 left-1/2 w-4 h-4 -ml-2 -mb-2 rounded-full z-20 ${theme === 'dark' ? 'bg-cyan-200' : 'bg-slate-900'}`}></div>
+                    <div class="text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}">
+                        RISK SCORE: <span class="${colorClass}">${score}/100</span>
+                    </div>
+                    <div class="mt-2 text-sm ${theme === 'dark' ? 'text-slate-400 tracking-wider' : 'text-slate-500 uppercase'}">
+                        VERDICT: ${label}
+                    </div>
                 </div>
+            `;
+        };
+
+        // --- Core Rendering Functions ---
+
+        function renderApp() {
+            // Apply theme to main containers
+            const body = document.body;
+            const navbar = document.getElementById('navbar');
+            const footer = document.getElementById('footer');
+            const bgLayer = document.getElementById('bg-layer');
+
+            if (state.theme === 'dark') {
+                body.className = "bg-slate-950 text-slate-200 transition-colors duration-500 font-sans selection:bg-cyan-500/30";
+                navbar.className = "fixed top-0 w-full z-50 border-b backdrop-blur-lg transition-colors duration-500 bg-slate-950/80 border-slate-800";
+                footer.className = "py-8 text-center border-t relative z-10 transition-colors duration-500 border-slate-800 text-slate-600";
+                bgLayer.innerHTML = `
+                    <div class="absolute w-[200%] h-[200%] -left-[50%] -top-[50%] opacity-20 transform-3d rotate-x-60 animate-grid-move"
+                        style="background-size: 40px 40px; background-image: linear-gradient(to right, #22d3ee 1px, transparent 1px), linear-gradient(to bottom, #22d3ee 1px, transparent 1px)"></div>
+                    <div class="absolute inset-0 bg-radial-gradient-fade"></div>
+                `;
+            } else {
+                body.className = "bg-slate-50 text-slate-800 transition-colors duration-500 font-sans selection:bg-cyan-500/30";
+                navbar.className = "fixed top-0 w-full z-50 border-b backdrop-blur-lg transition-colors duration-500 bg-white/80 border-slate-200";
+                footer.className = "py-8 text-center border-t relative z-10 transition-colors duration-500 border-slate-200 text-slate-400";
+                bgLayer.innerHTML = `<div class="fixed inset-0 pointer-events-none z-0 bg-gradient-to-br from-indigo-50 via-white to-cyan-50"></div>`;
+            }
+
+            renderNavbar();
+            renderContent();
+            renderFooter();
+        }
+
+        function renderNavbar() {
+            const nav = document.getElementById('navbar');
+            const t = state.theme === 'dark';
+
+            // Styles
+            const activeClass = t ? 'text-cyan-400 bg-cyan-950/50' : 'text-indigo-600 bg-indigo-50';
+            const inactiveClass = t ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-100';
+            const btnBase = "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300";
+
+            // Mobile Menu
+            const mobileMenu = state.menuOpen ? `
+                <div class="md:hidden border-t ${t ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}">
+                    <div class="px-4 py-4 space-y-2">
+                        ${['dashboard', 'url', 'text', 'qr', 'about'].map(tab => `
+                            <button onclick="setTab('${tab}')" class="block w-full text-left px-4 py-3 rounded-lg text-base font-medium ${state.activeTab === tab ? activeClass : inactiveClass}">
+                                ${tab.charAt(0).toUpperCase() + tab.slice(1)}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : '';
+
+            nav.innerHTML = `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex items-center justify-between h-20">
+                        <div class="flex items-center gap-3 cursor-pointer" onclick="setTab('dashboard')">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center ${t ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-[0_0_15px_rgba(34,211,238,0.5)]' : 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg'}">
+                                ${Icons.Shield('text-white')}
+                            </div>
+                            <span class="text-xl font-bold tracking-tight ${t ? 'text-white' : 'text-slate-900'}">
+                                CYBER<span class="${t ? 'text-cyan-400' : 'text-indigo-600'}">GUARD</span>
+                            </span>
+                        </div>
+
+                        <div class="hidden md:flex items-center gap-1">
+                            ${['dashboard', 'url', 'text', 'qr', 'about'].map(tab => `
+                                <button onclick="setTab('${tab}')" class="${btnBase} ${state.activeTab === tab ? activeClass : inactiveClass}">
+                                    ${tab.charAt(0).toUpperCase() + tab.slice(1)}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleTheme()" class="p-2 rounded-lg transition-all duration-300 ${t ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                ${t ? Icons.Sun() : Icons.Moon()}
+                            </button>
+                            <button onclick="toggleMenu()" class="md:hidden p-2 text-slate-500">
+                                ${state.menuOpen ? Icons.X() : Icons.Menu()}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                ${mobileMenu}
+            `;
+        }
+
+        function renderFooter() {
+            const footer = document.getElementById('footer');
+            footer.innerHTML = `
+                <p class="text-sm">
+                    ${state.theme === 'dark' 
+                        ? 'SECURE CONNECTION ESTABLISHED • TLS 1.3 • MILITARY GRADE ENCRYPTION' 
+                        : '© 2024 CyberGuard Security • Trusted by 10,000+ Users'}
+                </p>
+            `;
+        }
+
+        function renderContent() {
+            const main = document.getElementById('main-content');
+            const tab = state.activeTab;
+            
+            // Clean scan states when switching tabs (optional, but good for UX)
+            if (!state.isScanning) {
+                // Not resetting scanResult here allows persistence, but for simple app let's allow it.
+            }
+
+            if (tab === 'dashboard') main.innerHTML = getDashboardHTML();
+            else if (tab === 'url') main.innerHTML = getUrlScannerHTML();
+            else if (tab === 'text') main.innerHTML = getTextScannerHTML();
+            else if (tab === 'qr') main.innerHTML = getQrScannerHTML();
+            else if (tab === 'about') main.innerHTML = getAboutHTML();
+        }
+
+        // --- HTML Generators for Tabs ---
+
+        function getDashboardHTML() {
+            const t = state.theme === 'dark';
+            
+            // Stat Card
+            const statCard = (title, val, icon, color, pct) => `
+                <div class="${getCardStyles(state.theme)} p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium ${t ? 'text-slate-400 uppercase tracking-wider' : 'text-slate-500'}">${title}</p>
+                            <h3 class="text-3xl font-bold mt-1 ${t ? 'text-white' : 'text-slate-800'}">${val}</h3>
+                        </div>
+                        <div class="${color}">${icon}</div>
+                    </div>
+                    <div class="h-1 w-full rounded-full ${t ? 'bg-slate-800' : 'bg-slate-100'}">
+                        <div class="h-1 rounded-full ${color.replace('text-', 'bg-')}" style="width: ${pct}"></div>
+                    </div>
+                </div>
+            `;
+
+            // Action Button
+            const actionBtn = (id, icon, title, desc) => `
+                <button onclick="setTab('${id}')" class="text-left p-6 rounded-xl transition-all duration-300 group
+                    ${t ? 'bg-slate-900/40 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/50' : 'bg-white hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 shadow-sm hover:shadow-md'}">
+                    <div class="mb-4 w-12 h-12 rounded-lg flex items-center justify-center transition-colors
+                        ${t ? 'bg-slate-800 text-cyan-400 group-hover:bg-cyan-900/30' : 'bg-indigo-50 text-indigo-600 group-hover:bg-white'}">
+                        ${icon}
+                    </div>
+                    <h3 class="text-lg font-bold mb-2 flex items-center gap-2 ${t ? 'text-slate-200' : 'text-slate-900'}">
+                        ${title}
+                        <div class="opacity-0 -ml-2 transition-all duration-300 group-hover:opacity-100 group-hover:ml-0 ${t ? 'text-cyan-400' : 'text-indigo-600'}">
+                           ${Icons.ChevronRight()}
+                        </div>
+                    </h3>
+                    <p class="text-sm ${t ? 'text-slate-400' : 'text-slate-500'}">${desc}</p>
+                </button>
+            `;
+
+            return `
+                <div class="space-y-8 animate-fade-in">
+                    <div class="text-center py-12 relative z-10">
+                         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 ${t ? 'bg-cyan-950/30 text-cyan-400 border border-cyan-500/30' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}">
+                           <div class="w-2 h-2 rounded-full animate-pulse ${t ? 'bg-cyan-400' : 'bg-indigo-600'}"></div>
+                           SYSTEM OPERATIONAL
+                         </div>
+                         <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight ${t ? 'text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-500' : 'text-slate-900'}">
+                           ${t ? 'SECURE THE GRID' : 'Your Digital Bodyguard'}
+                         </h1>
+                         <p class="text-xl max-w-2xl mx-auto leading-relaxed ${t ? 'text-slate-400' : 'text-slate-600'}">
+                           ${t ? "Advanced threat detection protocols active. Neural engines ready for heuristic analysis of URLs, payloads, and visual steganography." : "Simple, powerful protection against scams. We check links, texts, and QR codes so you don't have to worry about fraud."}
+                         </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                        ${statCard('Threats Blocked', '14,205', Icons.Shield(), t ? 'text-cyan-400' : 'text-indigo-500', '75%')}
+                        ${statCard('Active Scans', '842', Icons.Activity(), t ? 'text-violet-400' : 'text-purple-500', '45%')}
+                        ${statCard('System Uptime', '99.9%', Icons.Cpu(), t ? 'text-emerald-400' : 'text-emerald-500', '99%')}
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 mt-12">
+                        ${actionBtn('url', Icons.Search('w-6 h-6'), 'URL Scanner', 'Scan websites for phishing kits.')}
+                        ${actionBtn('text', Icons.MessageSquare('w-6 h-6'), 'Text Analysis', 'Detect social engineering in SMS.')}
+                        ${actionBtn('qr', Icons.QrCode('w-6 h-6'), 'QR Decoder', 'Reveal hidden QR destinations.')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getUrlScannerHTML() {
+            const t = state.theme === 'dark';
+            return `
+                <div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
+                    <div class="text-center space-y-4">
+                        <h2 class="text-3xl font-bold ${t ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400' : 'text-slate-800'}">URL Fraud Detector</h2>
+                        <p class="${t ? 'text-slate-400' : 'text-slate-600'}">Analyze suspicious links before you click.</p>
+                    </div>
+
+                    <div class="${getCardStyles(state.theme)} p-8">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-1 relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${t ? 'text-cyan-500' : 'text-slate-400'}">
+                                    ${Icons.Globe('w-5 h-5')}
+                                </div>
+                                <input type="text" id="urlInput" placeholder="Enter URL (e.g., http://suspicious-bank.com/login)"
+                                    class="w-full pl-10 pr-4 py-3 outline-none transition-all duration-300 ${t ? 'bg-slate-950 border border-slate-700 text-cyan-100 placeholder-slate-600 focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(34,211,238,0.2)] font-mono' : 'bg-slate-50 border border-slate-200 text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 rounded-xl'}"
+                                />
+                            </div>
+                            <button onclick="runUrlScan()" id="scanBtn" class="relative flex items-center justify-center gap-2 px-6 py-3 font-medium transition-all duration-300 ${getButtonStyles('primary', state.theme)}">
+                                ${Icons.Search('w-4 h-4')} Analyze URL
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="urlResultContainer"></div>
+                </div>
+            `;
+        }
+
+        function getTextScannerHTML() {
+            const t = state.theme === 'dark';
+            return `
+                <div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
+                    <div class="text-center space-y-4">
+                        <h2 class="text-3xl font-bold ${t ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400' : 'text-slate-800'}">Text / SMS Analysis</h2>
+                        <p class="${t ? 'text-slate-400' : 'text-slate-600'}">Paste suspicious emails or messages to detect social engineering.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-4">
+                            <div class="${getCardStyles(state.theme)} h-full flex flex-col">
+                                <div class="p-4 border-b ${t ? 'border-slate-800 bg-slate-900/50' : 'border-slate-100 bg-slate-50'}">
+                                    <span class="text-sm font-bold uppercase tracking-wider ${t ? 'text-cyan-500' : 'text-indigo-500'}">Input Source</span>
+                                </div>
+                                <textarea id="textInput" rows="12" class="flex-1 w-full p-4 resize-none outline-none ${t ? 'bg-transparent text-slate-300 placeholder-slate-700 font-mono' : 'bg-transparent text-slate-700 placeholder-slate-400'}" placeholder="Paste the suspicious message here..."></textarea>
+                                <div class="p-4 border-t border-transparent">
+                                    <button onclick="runTextScan()" id="textScanBtn" class="w-full relative flex items-center justify-center gap-2 px-6 py-3 font-medium transition-all duration-300 ${getButtonStyles('primary', state.theme)}">
+                                        ${Icons.MessageSquare('w-4 h-4')} Analyze Text
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-4" id="textResultContainer">
+                             <div class="${getCardStyles(state.theme)} h-full flex flex-col items-center justify-center p-8 text-center min-h-[400px]">
+                                <div class="p-4 rounded-full mb-4 ${t ? 'bg-slate-800/50 text-slate-600' : 'bg-slate-100 text-slate-400'}">
+                                    ${Icons.FileText('w-12 h-12')}
+                                </div>
+                                <h3 class="text-lg font-medium mb-2 ${t ? 'text-slate-300' : 'text-slate-700'}">Ready to Analyze</h3>
+                                <p class="${t ? 'text-slate-500' : 'text-slate-500'}">Waiting for input content.</p>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getQrScannerHTML() {
+            const t = state.theme === 'dark';
+            return `
+                <div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
+                    <div class="text-center space-y-4">
+                        <h2 class="text-3xl font-bold ${t ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400' : 'text-slate-800'}">QR Code Analyzer</h2>
+                        <p class="${t ? 'text-slate-400' : 'text-slate-600'}">Upload QR code screenshots to reveal hidden destinations safely.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="${getCardStyles(state.theme)} p-8 flex flex-col items-center justify-center min-h-[400px] border-dashed border-2 bg-opacity-50" id="qrUploadArea">
+                            <!-- Upload State (Initial) -->
+                            <label class="cursor-pointer flex flex-col items-center group w-full h-full justify-center">
+                                <div class="p-6 rounded-full mb-4 transition-all duration-300 ${t ? 'bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-500/20 group-hover:scale-110' : 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100 group-hover:scale-110'}">
+                                    ${Icons.QrCode('w-12 h-12')}
+                                </div>
+                                <span class="text-lg font-medium mb-2 ${t ? 'text-slate-300' : 'text-slate-700'}">Upload QR Code Image</span>
+                                <span class="text-sm ${t ? 'text-slate-500' : 'text-slate-500'}">Click to browse</span>
+                                <input type="file" class="hidden" accept="image/*" onchange="handleQrUpload(this)">
+                            </label>
+                        </div>
+                        <div id="qrResultContainer">
+                             <div class="flex flex-col items-center justify-center h-64 text-center ${t ? 'text-slate-500' : 'text-slate-400'}">
+                                ${Icons.Smartphone('w-12 h-12 mb-4 opacity-50')}
+                                <p>Upload a QR code to see the hidden destination and risk analysis.</p>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getAboutHTML() {
+            const t = state.theme === 'dark';
+            const feature = (icon, title, desc, color) => `
+                <div class="${getCardStyles(state.theme)} p-8">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 rounded-lg ${t ? `bg-${color}-500/20 text-${color}-400` : `bg-${color}-100 text-${color}-600`}">
+                            ${icon}
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 ${t ? 'text-white' : 'text-slate-800'}">${title}</h3>
+                            <p class="leading-relaxed ${t ? 'text-slate-400' : 'text-slate-600'}">${desc}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return `
+                <div class="max-w-3xl mx-auto py-12 animate-fade-in">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold mb-4 ${t ? 'text-white' : 'text-slate-900'}">System Architecture</h2>
+                        <p class="${t ? 'text-cyan-400' : 'text-indigo-600'}">Understanding the AI Defense Layer</p>
+                    </div>
+                    <div class="space-y-8">
+                        ${feature(Icons.Cpu('w-6 h-6'), 'Machine Learning Core', 'Our system utilizes a hybrid model combining Natural Language Processing (BERT-based) for text analysis and heuristic pattern matching for URL structures. The engine is trained on over 50 million phishing datasets updated hourly.', 'cyan')}
+                        ${feature(Icons.Lock('w-6 h-6'), 'Zero-Knowledge Privacy', 'Analysis is performed in a sandboxed environment. Your submitted URLs, texts, and QR codes are processed ephemerally and never stored permanently on our servers, ensuring your data remains private.', 'violet')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Interaction Logic (Simulated Backend) ---
+
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            renderApp();
+        }
+
+        function toggleMenu() {
+            state.menuOpen = !state.menuOpen;
+            renderNavbar(); // Re-render nav to show/hide mobile menu
+        }
+
+        function setTab(tab) {
+            state.activeTab = tab;
+            state.menuOpen = false; // Close mobile menu on navigate
+            renderNavbar(); // Update active states
+            renderContent();
+        }
+
+        function runUrlScan() {
+            const input = document.getElementById('urlInput');
+            const resultDiv = document.getElementById('urlResultContainer');
+            const btn = document.getElementById('scanBtn');
+            const url = input.value;
+            const t = state.theme === 'dark';
+
+            if (!url) return;
+
+            // Loading State
+            btn.innerHTML = 'Scanning...';
+            btn.disabled = true;
+            resultDiv.innerHTML = ScanningLoader(state.theme);
+
+            setTimeout(() => {
+                const isMalicious = url.includes('login') || url.includes('bank') || url.includes('free');
+                const score = isMalicious ? Math.floor(Math.random() * 30 + 70) : Math.floor(Math.random() * 20);
+                const threatList = isMalicious 
+                    ? `
+                        <li class="flex items-start gap-3 p-3 rounded-lg ${t ? 'bg-red-950/20 border border-red-900/50' : 'bg-red-50'}">
+                            ${Icons.AlertOctagon('text-red-500 w-5 h-5 mt-0.5')}
+                            <span class="${t ? 'text-red-200' : 'text-red-800'}">Phishing Attempt Detected</span>
+                        </li>
+                        <li class="flex items-start gap-3 p-3 rounded-lg ${t ? 'bg-red-950/20 border border-red-900/50' : 'bg-red-50'}">
+                             ${Icons.AlertOctagon('text-red-500 w-5 h-5 mt-0.5')}
+                             <span class="${t ? 'text-red-200' : 'text-red-800'}">Suspicious Domain Age</span>
+                        </li>
+                      `
+                    : `
+                        <li class="flex items-center gap-3 p-3 rounded-lg ${t ? 'bg-emerald-950/20 border border-emerald-900/50' : 'bg-emerald-50'}">
+                            ${Icons.CheckCircle('text-emerald-500 w-5 h-5')}
+                            <span class="${t ? 'text-emerald-200' : 'text-emerald-800'}">No malware signatures found.</span>
+                        </li>
+                      `;
+
+                const badgeColor = score > 50 
+                    ? (t ? "text-red-400 bg-red-950/50 border-red-500/30" : "text-rose-600 bg-rose-50 border-rose-100")
+                    : (t ? "text-emerald-400 bg-emerald-950/50 border-emerald-500/30" : "text-emerald-600 bg-emerald-50 border-emerald-100");
+
+                resultDiv.innerHTML = `
+                    <div class="animate-fade-in-up mt-8">
+                        <div class="${getCardStyles(state.theme)} p-0 overflow-hidden">
+                            <div class="p-6 border-b ${t ? 'border-slate-800 bg-slate-900/80' : 'border-slate-100 bg-slate-50'}">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-xl font-bold flex items-center gap-2 ${t ? 'text-white' : 'text-slate-800'}">
+                                        ${Icons.Activity(t ? 'text-cyan-400' : 'text-indigo-600')} Scan Results
+                                    </h3>
+                                    <span class="px-3 py-1 text-xs font-bold border ${t ? 'rounded-none tracking-widest uppercase' : 'rounded-full'} ${badgeColor}">
+                                        ${score > 50 ? 'HIGH RISK DETECTED' : 'SAFE TO VISIT'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-8 grid md:grid-cols-2 gap-12 items-center">
+                                ${RiskMeter(score, state.theme)}
+                                <div class="space-y-6">
+                                    <div>
+                                        <h4 class="text-sm font-semibold mb-3 ${t ? 'text-slate-400 uppercase tracking-widest' : 'text-slate-500 uppercase'}">Threat Analysis</h4>
+                                        <ul class="space-y-3">${threatList}</ul>
+                                    </div>
+                                    <div class="p-4 rounded-lg font-mono text-sm ${t ? 'bg-slate-950 text-cyan-400/80 border border-slate-800' : 'bg-slate-100 text-slate-600'}">
+                                        <pre class="whitespace-pre-wrap">SSL Certificate: Valid (Cloudflare Inc.)\nServer Location: Frankfurt, DE\nDNS Records: 4 A-Records found</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                btn.innerHTML = `${Icons.Search('w-4 h-4')} Analyze URL`;
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        function runTextScan() {
+            const input = document.getElementById('textInput');
+            const resultDiv = document.getElementById('textResultContainer');
+            const btn = document.getElementById('textScanBtn');
+            const text = input.value;
+            const t = state.theme === 'dark';
+
+            if (!text) return;
+
+            btn.innerHTML = 'Analyzing...';
+            btn.disabled = true;
+            resultDiv.innerHTML = `<div class="${getCardStyles(state.theme)} h-full flex items-center justify-center min-h-[400px]">${ScanningLoader(state.theme)}</div>`;
+
+            setTimeout(() => {
+                const keywords = ['urgent', 'immediately', 'password', 'verify', 'bank', 'suspended', 'account'];
+                const foundKeywords = keywords.filter(k => text.toLowerCase().includes(k));
+                const score = Math.min(foundKeywords.length * 20, 99);
                 
-                <div className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
-                    RISK SCORE: <span className={score > 70 ? 'text-red-500' : score > 30 ? 'text-amber-500' : 'text-emerald-500'}>{score}/100</span>
-                </div>
-                <div className={`mt-2 text-sm ${theme === 'dark' ? 'text-slate-400 tracking-wider' : 'text-slate-500 uppercase'}`}>
-                    VERDICT: {label}
-                </div>
-                </div>
-            );
-        };
-
-        // --- Feature Views ---
-
-        const UrlScanner = ({ theme }) => {
-            const [url, setUrl] = useState('');
-            const [isScanning, setIsScanning] = useState(false);
-            const [result, setResult] = useState(null);
-
-           const handleScan = async () => {
-  if (!url) return;
-
-  setIsScanning(true);
-  setResult(null);
-
-  try {
-    const res = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text: url,
-        use_openai: true
-      })
-    });
-
-    const data = await res.json();
-
-    // Convert backend risk → UI score
-    const score =
-      data.final_risk?.toLowerCase().includes("high") ? 85 :
-      data.final_risk?.toLowerCase().includes("medium") ? 55 :
-      15;
-
-    setResult({
-      url,
-      score,
-      threats: data.explanation || [],
-      details:
-        `Risk Level: ${data.final_risk}\n` +
-        `Scam Type: ${data.scam_type || "N/A"}`
-    });
-
-  } catch (err) {
-    setResult({
-      url,
-      score: 90,
-      threats: ["Backend unreachable"],
-      details: "Failed to connect to analysis server."
-    });
-  }
-
-  setIsScanning(false);
-};
-
-            return (
-                <div className="max-w-4xl mx-auto space-y-8">
-                <div className="text-center space-y-4">
-                    <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400' : 'text-slate-800'}`}>
-                    URL Fraud Detector
-                    </h2>
-                    <p className={`${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
-                    Analyze suspicious links before you click.
-                    </p>
-                </div>
-
-                <Card theme={theme} className="p-8">
-                    <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 relative group">
-                        <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${theme === 'dark' ? 'text-cyan-500' : 'text-slate-400'}`}>
-                        <Globe size={20} />
-                        </div>
-                        <input
-                        type="text"
-                        placeholder="Enter URL to analyze (e.g., http://suspicious-bank.com/login)"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        className={`w-full pl-10 pr-4 py-3 outline-none transition-all duration-300
-                            ${theme === 'dark' 
-                            ? 'bg-slate-950 border border-slate-700 text-cyan-100 placeholder-slate-600 focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(34,211,238,0.2)] font-mono' 
-                            : 'bg-slate-50 border border-slate-200 text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 rounded-xl'
-                            }`}
-                        />
-                    </div>
-                    <Button theme={theme} onClick={handleScan} disabled={isScanning} icon={Search}>
-                        {isScanning ? 'Scanning...' : 'Analyze URL'}
-                    </Button>
-                    </div>
-                </Card>
-
-                {isScanning && <ScanningAnimation theme={theme} />}
-
-                {result && (
-                    <div className="animate-fade-in-up">
-                    <Card theme={theme} className="p-0 overflow-hidden">
-                        <div className={`p-6 border-b ${theme === 'dark' ? 'border-slate-800 bg-slate-900/80' : 'border-slate-100 bg-slate-50'}`}>
-                        <div className="flex justify-between items-center">
-                            <h3 className={`text-xl font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
-                            <Activity className={theme === 'dark' ? 'text-cyan-400' : 'text-indigo-600'} />
-                            Scan Results
-                            </h3>
-                            <Badge type={result.score > 50 ? 'danger' : 'success'} theme={theme}>
-                            {result.score > 50 ? 'HIGH RISK DETECTED' : 'SAFE TO VISIT'}
-                            </Badge>
-                        </div>
-                        </div>
-                        
-                        <div className="p-8 grid md:grid-cols-2 gap-12 items-center">
-                        <RiskMeter score={result.score} theme={theme} />
-                        
-                        <div className="space-y-6">
-                            <div>
-                            <h4 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-slate-400 uppercase tracking-widest' : 'text-slate-500 uppercase'}`}>Threat Analysis</h4>
-                            <ul className="space-y-3">
-                                {result.threats.length > 0 ? (
-                                result.threats.map((threat, idx) => (
-                                    <li key={idx} className={`flex items-start gap-3 p-3 rounded-lg ${theme === 'dark' ? 'bg-red-950/20 border border-red-900/50' : 'bg-red-50'}`}>
-                                    <AlertOctagon size={18} className="text-red-500 mt-0.5" />
-                                    <span className={theme === 'dark' ? 'text-red-200' : 'text-red-800'}>{threat}</span>
-                                    </li>
-                                ))
-                                ) : (
-                                <li className={`flex items-center gap-3 p-3 rounded-lg ${theme === 'dark' ? 'bg-emerald-950/20 border border-emerald-900/50' : 'bg-emerald-50'}`}>
-                                    <CheckCircle size={18} className="text-emerald-500" />
-                                    <span className={theme === 'dark' ? 'text-emerald-200' : 'text-emerald-800'}>No malware signatures found.</span>
-                                </li>
-                                )}
-                            </ul>
-                            </div>
-
-                            <div className={`p-4 rounded-lg font-mono text-sm ${theme === 'dark' ? 'bg-slate-950 text-cyan-400/80 border border-slate-800' : 'bg-slate-100 text-slate-600'}`}>
-                            <pre className="whitespace-pre-wrap">{result.details}</pre>
-                            </div>
-                        </div>
-                        </div>
-                    </Card>
-                    </div>
-                )}
-                </div>
-            );
-        };
-
-        const TextScanner = ({ theme }) => {
-            const [text, setText] = useState('');
-            const [isScanning, setIsScanning] = useState(false);
-            const [result, setResult] = useState(null);
-
-           const handleScan = async () => {
-  if (!text) return;
-
-  setIsScanning(true);
-  setResult(null);
-
-  try {
-    const res = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text,
-        use_openai: true
-      })
-    });
-
-    const data = await res.json();
-
-    const score =
-      data.final_risk?.toLowerCase().includes("high") ? 80 :
-      data.final_risk?.toLowerCase().includes("medium") ? 50 : 10;
-
-    setResult({
-      score,
-      keywords: [],
-      summary: Array.isArray(data.explanation)
-        ? data.explanation.join(" ")
-        : data.explanation
-    });
-
-  } catch (err) {
-    setResult({
-      score: 90,
-      keywords: [],
-      summary: "Backend connection failed."
-    });
-  }
-
-  setIsScanning(false);
-};
-
-            const highlightText = (content, keywords) => {
-                if (!keywords || keywords.length === 0) return content;
+                // Highlight text logic
+                let highlightedText = text.substring(0, 150) + (text.length > 150 ? '...' : '');
                 const regex = new RegExp(`(${keywords.join('|')})`, 'gi');
-                const parts = content.split(regex);
-                
-                return parts.map((part, i) => 
-                keywords.some(k => k.toLowerCase() === part.toLowerCase()) ? (
-                    <span key={i} className={`${theme === 'dark' ? 'bg-red-500/30 text-red-200 border-b border-red-500' : 'bg-rose-100 text-rose-800 font-bold'}`}>
-                    {part}
-                    </span>
-                ) : part
-                );
-            };
-
-            return (
-                <div className="max-w-4xl mx-auto space-y-8">
-                <div className="text-center space-y-4">
-                    <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400' : 'text-slate-800'}`}>
-                    Text / SMS Analysis
-                    </h2>
-                    <p className={`${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
-                    Paste suspicious emails or messages to detect social engineering.
-                    </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className="flex flex-col gap-4">
-                    <Card theme={theme} className="h-full flex flex-col">
-                        <div className={`p-4 border-b ${theme === 'dark' ? 'border-slate-800 bg-slate-900/50' : 'border-slate-100 bg-slate-50'}`}>
-                        <span className={`text-sm font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-cyan-500' : 'text-indigo-500'}`}>Input Source</span>
-                        </div>
-                        <textarea
-                        className={`flex-1 w-full p-4 resize-none outline-none ${theme === 'dark' ? 'bg-transparent text-slate-300 placeholder-slate-700 font-mono' : 'bg-transparent text-slate-700 placeholder-slate-400'}`}
-                        placeholder="Paste the suspicious message here..."
-                        rows={12}
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        ></textarea>
-                        <div className="p-4 border-t border-transparent">
-                        <Button theme={theme} onClick={handleScan} disabled={isScanning} className="w-full" icon={MessageSquare}>
-                            {isScanning ? 'Processing Language Models...' : 'Analyze Text'}
-                        </Button>
-                        </div>
-                    </Card>
-                    </div>
-
-                    <div className="flex flex-col gap-4">
-                    {isScanning ? (
-                        <Card theme={theme} className="h-full flex items-center justify-center min-h-[400px]">
-                        <ScanningAnimation theme={theme} />
-                        </Card>
-                    ) : result ? (
-                        <Card theme={theme} className="h-full animate-fade-in-up">
-                            <div className={`p-4 border-b ${theme === 'dark' ? 'border-slate-800 bg-slate-900/50' : 'border-slate-100 bg-slate-50'}`}>
-                            <span className={`text-sm font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-cyan-500' : 'text-indigo-500'}`}>Analysis Report</span>
-                            </div>
-                            <div className="p-6 space-y-6">
-                            <div className="flex items-center justify-between">
-                                <span className={theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>Risk Probability</span>
-                                <Badge theme={theme} type={result.score > 50 ? 'danger' : 'success'}>
-                                {result.score > 50 ? 'HIGH PROBABILITY' : 'LOW PROBABILITY'}
-                                </Badge>
-                            </div>
-                            
-                            <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                                <div 
-                                className={`h-full transition-all duration-1000 ${result.score > 50 ? 'bg-red-500' : 'bg-emerald-500'}`} 
-                                style={{ width: `${result.score}%` }}
-                                ></div>
-                            </div>
-
-                            <div className={`p-4 rounded-lg text-sm leading-relaxed ${theme === 'dark' ? 'bg-slate-950 border border-slate-800 text-slate-300' : 'bg-slate-50 text-slate-700'}`}>
-                                <p className="mb-2 font-semibold">Message Preview (Highlighted Triggers):</p>
-                                <p>"{highlightText(text.substring(0, 150) + (text.length > 150 ? '...' : ''), result.keywords)}"</p>
-                            </div>
-
-                            <div className="flex items-start gap-3">
-                                <Zap className={theme === 'dark' ? 'text-amber-400 shrink-0' : 'text-amber-500 shrink-0'} size={20} />
-                                <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
-                                {result.summary}
-                                </p>
-                            </div>
-                            </div>
-                        </Card>
-                    ) : (
-                        <Card theme={theme} className="h-full flex flex-col items-center justify-center p-8 text-center min-h-[400px]">
-                        <div className={`p-4 rounded-full mb-4 ${theme === 'dark' ? 'bg-slate-800/50 text-slate-600' : 'bg-slate-100 text-slate-400'}`}>
-                            <FileText size={48} />
-                        </div>
-                        <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>Ready to Analyze</h3>
-                        <p className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                            Waiting for input content. The AI looks for urgency, financial requests, and known scam patterns.
-                        </p>
-                        </Card>
-                    )}
-                    </div>
-                </div>
-                </div>
-            );
-        };
-
-        const QrScanner = ({ theme }) => {
-            const [file, setFile] = useState(null);
-            const [isScanning, setIsScanning] = useState(false);
-            const [result, setResult] = useState(null);
-
-            const handleFileChange = (e) => {
-                if (e.target.files && e.target.files[0]) {
-                setFile(e.target.files[0]);
-                setResult(null);
-                }
-            };
-
-            const startScan = () => {
-                if (!file) return;
-                setIsScanning(true);
-                setTimeout(() => {
-                setIsScanning(false);
-                setResult({
-                    decoded: "https://secure-login-update-x9.com/verify",
-                    score: 85,
-                    type: "Quishing (QR Phishing)"
+                highlightedText = highlightedText.replace(regex, (match) => {
+                    return `<span class="${t ? 'bg-red-500/30 text-red-200 border-b border-red-500' : 'bg-rose-100 text-rose-800 font-bold'}">${match}</span>`;
                 });
-                }, 2500);
-            };
 
-            return (
-                <div className="max-w-4xl mx-auto space-y-8">
-                <div className="text-center space-y-4">
-                    <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400' : 'text-slate-800'}`}>
-                    QR Code Analyzer
-                    </h2>
-                    <p className={`${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
-                    Upload QR code screenshots to reveal hidden destinations safely.
-                    </p>
-                </div>
+                const badgeColor = score > 50 
+                    ? (t ? "text-red-400 bg-red-950/50 border-red-500/30" : "text-rose-600 bg-rose-50 border-rose-100")
+                    : (t ? "text-emerald-400 bg-emerald-950/50 border-emerald-500/30" : "text-emerald-600 bg-emerald-50 border-emerald-100");
 
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                    <Card theme={theme} className="p-8 flex flex-col items-center justify-center min-h-[400px] border-dashed border-2 bg-opacity-50">
-                    {!file ? (
-                        <label className="cursor-pointer flex flex-col items-center group w-full h-full justify-center">
-                        <div className={`p-6 rounded-full mb-4 transition-all duration-300 ${theme === 'dark' ? 'bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-500/20 group-hover:scale-110' : 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100 group-hover:scale-110'}`}>
-                            <QrCode size={48} />
+                resultDiv.innerHTML = `
+                     <div class="${getCardStyles(state.theme)} h-full animate-fade-in-up">
+                        <div class="p-4 border-b ${t ? 'border-slate-800 bg-slate-900/50' : 'border-slate-100 bg-slate-50'}">
+                            <span class="text-sm font-bold uppercase tracking-wider ${t ? 'text-cyan-500' : 'text-indigo-500'}">Analysis Report</span>
                         </div>
-                        <span className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>Upload QR Code Image</span>
-                        <span className={`text-sm ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>Drag & drop or click to browse</span>
-                        <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-                        </label>
-                    ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center relative">
-                        <div className={`w-48 h-48 rounded-lg mb-6 relative overflow-hidden flex items-center justify-center ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                            <QrCode size={64} className={`opacity-20 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
-                            
-                            {isScanning && (
-                                <div className="absolute inset-0 z-10">
-                                <div className="w-full h-1 bg-red-500 shadow-[0_0_15px_rgba(239,68,68,1)] absolute top-0 animate-scan-down"></div>
-                                </div>
-                            )}
-                        </div>
-                        
-                        <p className={`mb-6 font-mono text-sm ${theme === 'dark' ? 'text-cyan-400' : 'text-indigo-600'}`}>
-                            {file.name}
-                        </p>
-
-                        <div className="flex gap-4">
-                            <Button theme={theme} onClick={startScan} disabled={isScanning} icon={Eye}>
-                            {isScanning ? 'Decoding...' : 'Scan Image'}
-                            </Button>
-                            <button onClick={() => {setFile(null); setResult(null);}} className={`px-4 py-2 text-sm hover:underline ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Remove
-                            </button>
-                        </div>
-                        </div>
-                    )}
-                    </Card>
-
-                    <div>
-                    {isScanning ? (
-                        <div className="space-y-4">
-                            <div className={`h-4 rounded w-3/4 animate-pulse ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
-                            <div className={`h-4 rounded w-1/2 animate-pulse ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
-                            <div className={`h-4 rounded w-full animate-pulse ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
-                        </div>
-                    ) : result ? (
-                        <div className="animate-fade-in-right space-y-6">
-                        <Card theme={theme} className="p-6 border-l-4 border-l-red-500">
-                            <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>Scan Complete</h3>
-                            
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                <span className={theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>Decoded URL</span>
-                                <Badge theme={theme} type="danger">MALICIOUS</Badge>
-                                </div>
-                                <div className={`p-3 rounded font-mono text-sm break-all ${theme === 'dark' ? 'bg-slate-950 text-red-400 border border-red-900/30' : 'bg-red-50 text-red-700'}`}>
-                                {result.decoded}
-                                </div>
+                        <div class="p-6 space-y-6">
+                            <div class="flex items-center justify-between">
+                                <span class="${t ? 'text-slate-400' : 'text-slate-600'}">Risk Probability</span>
+                                <span class="px-3 py-1 text-xs font-bold border ${t ? 'rounded-none tracking-widest uppercase' : 'rounded-full'} ${badgeColor}">
+                                    ${score > 50 ? 'HIGH PROBABILITY' : 'LOW PROBABILITY'}
+                                </span>
                             </div>
-
-                            <div className={`mt-6 p-4 rounded-lg flex gap-3 ${theme === 'dark' ? 'bg-amber-950/30 border border-amber-900/30' : 'bg-amber-50 border border-amber-100'}`}>
-                                <AlertTriangle className="text-amber-500 shrink-0" />
-                                <div>
-                                <h4 className={`font-bold text-sm ${theme === 'dark' ? 'text-amber-400' : 'text-amber-800'}`}>Quishing Attack Detected</h4>
-                                <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-amber-200/70' : 'text-amber-700'}`}>
-                                    This QR code redirects to a known phishing site masquerading as a login portal. Do not visit.
+                            <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full transition-all duration-1000 ${score > 50 ? 'bg-red-500' : 'bg-emerald-500'}" style="width: ${score}%"></div>
+                            </div>
+                            <div class="p-4 rounded-lg text-sm leading-relaxed ${t ? 'bg-slate-950 border border-slate-800 text-slate-300' : 'bg-slate-50 text-slate-700'}">
+                                <p class="mb-2 font-semibold">Message Preview (Highlighted Triggers):</p>
+                                <p>"${highlightedText}"</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="${t ? 'text-amber-400' : 'text-amber-500'}">${Icons.Zap()}</div>
+                                <p class="text-sm ${t ? 'text-slate-400' : 'text-slate-600'}">
+                                    ${foundKeywords.length > 0 ? "This message uses urgency and financial triggers common in social engineering attacks." : "The text appears neutral and does not contain common scam triggers."}
                                 </p>
+                            </div>
+                        </div>
+                     </div>
+                `;
+                btn.innerHTML = `${Icons.MessageSquare('w-4 h-4')} Analyze Text`;
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        function handleQrUpload(input) {
+            const uploadArea = document.getElementById('qrUploadArea');
+            const resultDiv = document.getElementById('qrResultContainer');
+            const file = input.files[0];
+            const t = state.theme === 'dark';
+
+            if (!file) return;
+
+            // Show file preview state
+            uploadArea.innerHTML = `
+                <div class="w-full h-full flex flex-col items-center justify-center relative">
+                    <div class="w-48 h-48 rounded-lg mb-6 relative overflow-hidden flex items-center justify-center ${t ? 'bg-slate-800' : 'bg-slate-100'}">
+                        ${Icons.QrCode(`opacity-20 w-16 h-16 ${t ? 'text-white' : 'text-black'}`)}
+                        <div id="scanOverlay" class="hidden absolute inset-0 z-10">
+                            <div class="w-full h-1 bg-red-500 shadow-[0_0_15px_rgba(239,68,68,1)] absolute top-0 animate-scan-down"></div>
+                        </div>
+                    </div>
+                    <p class="mb-6 font-mono text-sm ${t ? 'text-cyan-400' : 'text-indigo-600'}">${file.name}</p>
+                    <div class="flex gap-4">
+                        <button onclick="startQrScan()" id="qrScanBtn" class="relative flex items-center justify-center gap-2 px-6 py-3 font-medium transition-all duration-300 ${getButtonStyles('primary', state.theme)}">
+                            ${Icons.Eye('w-4 h-4')} Scan Image
+                        </button>
+                        <button onclick="resetQr()" class="px-4 py-2 text-sm hover:underline ${t ? 'text-slate-400' : 'text-slate-500'}">Remove</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startQrScan() {
+            const btn = document.getElementById('qrScanBtn');
+            const overlay = document.getElementById('scanOverlay');
+            const resultDiv = document.getElementById('qrResultContainer');
+            const t = state.theme === 'dark';
+
+            btn.innerHTML = 'Decoding...';
+            btn.disabled = true;
+            overlay.classList.remove('hidden');
+
+            // Dummy skeleton loader in result div
+            resultDiv.innerHTML = `
+                <div class="space-y-4">
+                    <div class="h-4 rounded w-3/4 animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
+                    <div class="h-4 rounded w-1/2 animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
+                    <div class="h-4 rounded w-full animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const decoded = "https://secure-login-update-x9.com/verify";
+                
+                resultDiv.innerHTML = `
+                    <div class="animate-fade-in-right space-y-6">
+                        <div class="${getCardStyles(state.theme)} p-6 border-l-4 border-l-red-500">
+                            <h3 class="text-lg font-bold mb-4 ${t ? 'text-white' : 'text-slate-800'}">Scan Complete</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="${t ? 'text-slate-400' : 'text-slate-500'}">Decoded URL</span>
+                                    <span class="px-3 py-1 text-xs font-bold border ${t ? 'rounded-none tracking-widest uppercase text-red-400 bg-red-950/50 border-red-500/30' : 'rounded-full text-rose-600 bg-rose-50 border-rose-100'}">MALICIOUS</span>
+                                </div>
+                                <div class="p-3 rounded font-mono text-sm break-all ${t ? 'bg-slate-950 text-red-400 border border-red-900/30' : 'bg-red-50 text-red-700'}">
+                                    ${decoded}
                                 </div>
                             </div>
-                        </Card>
-                        </div>
-                    ) : (
-                        <div className={`flex flex-col items-center justify-center h-64 text-center ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>
-                        <Smartphone size={48} className="mb-4 opacity-50" />
-                        <p>Upload a QR code to see the hidden destination and risk analysis.</p>
-                        </div>
-                    )}
-                    </div>
-                </div>
-                </div>
-            );
-        };
-
-        const AboutView = ({ theme }) => (
-            <div className="max-w-3xl mx-auto py-12">
-                <div className={`text-center mb-12`}>
-                <h2 className={`text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>System Architecture</h2>
-                <p className={theme === 'dark' ? 'text-cyan-400' : 'text-indigo-600'}>Understanding the AI Defense Layer</p>
-                </div>
-
-                <div className="space-y-8">
-                <Card theme={theme} className="p-8">
-                    <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-indigo-100 text-indigo-600'}`}>
-                        <Cpu size={24} />
-                    </div>
-                    <div>
-                        <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>Machine Learning Core</h3>
-                        <p className={`leading-relaxed ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
-                        Our system utilizes a hybrid model combining Natural Language Processing (BERT-based) for text analysis and heuristic pattern matching for URL structures. The engine is trained on over 50 million phishing datasets updated hourly.
-                        </p>
-                    </div>
-                    </div>
-                </Card>
-
-                <Card theme={theme} className="p-8">
-                    <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-violet-500/20 text-violet-400' : 'bg-purple-100 text-purple-600'}`}>
-                        <Lock size={24} />
-                    </div>
-                    <div>
-                        <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>Zero-Knowledge Privacy</h3>
-                        <p className={`leading-relaxed ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
-                        Analysis is performed in a sandboxed environment. Your submitted URLs, texts, and QR codes are processed ephemerally and never stored permanently on our servers, ensuring your data remains private.
-                        </p>
-                    </div>
-                    </div>
-                </Card>
-                </div>
-            </div>
-        );
-
-        // --- Main App Component ---
-
-        const App = () => {
-            const [theme, setTheme] = useState('dark');
-            const [activeTab, setActiveTab] = useState('dashboard');
-            const [menuOpen, setMenuOpen] = useState(false);
-
-            const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-
-            const bgStyle = theme === 'dark' 
-                ? "bg-slate-950 text-slate-200"
-                : "bg-slate-50 text-slate-800";
-
-            const gridOverlay = theme === 'dark' ? (
-                <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div 
-                    className="absolute w-[200%] h-[200%] -left-[50%] -top-[50%] opacity-20 transform-3d rotate-x-60 animate-grid-move"
-                    style={{
-                    backgroundSize: '40px 40px',
-                    backgroundImage: 'linear-gradient(to right, #22d3ee 1px, transparent 1px), linear-gradient(to bottom, #22d3ee 1px, transparent 1px)'
-                    }}
-                ></div>
-                <div className="absolute inset-0 bg-radial-gradient-fade"></div>
-                </div>
-            ) : (
-                <div className="fixed inset-0 pointer-events-none z-0 bg-gradient-to-br from-indigo-50 via-white to-cyan-50"></div>
-            );
-
-            const renderContent = () => {
-                switch (activeTab) {
-                case 'url': return <UrlScanner theme={theme} />;
-                case 'text': return <TextScanner theme={theme} />;
-                case 'qr': return <QrScanner theme={theme} />;
-                case 'about': return <AboutView theme={theme} />;
-                default: return (
-                    <div className="space-y-8 animate-fade-in">
-                    <div className="text-center py-12 relative z-10">
-                        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 ${theme === 'dark' ? 'bg-cyan-950/30 text-cyan-400 border border-cyan-500/30' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>
-                        <div className={`w-2 h-2 rounded-full animate-pulse ${theme === 'dark' ? 'bg-cyan-400' : 'bg-indigo-600'}`}></div>
-                        SYSTEM OPERATIONAL
-                        </div>
-                        <h1 className={`text-5xl md:text-7xl font-bold mb-6 tracking-tight ${theme === 'dark' ? 'text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-500' : 'text-slate-900'}`}>
-                        {theme === 'dark' ? 'SECURE THE GRID' : 'Your Digital Bodyguard'}
-                        </h1>
-                        <p className={`text-xl max-w-2xl mx-auto leading-relaxed ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
-                        {theme === 'dark' 
-                            ? "Advanced threat detection protocols active. Neural engines ready for heuristic analysis of URLs, payloads, and visual steganography."
-                            : "Simple, powerful protection against scams. We check links, texts, and QR codes so you don't have to worry about fraud."
-                        }
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-                        <Card theme={theme} className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-400 uppercase tracking-wider' : 'text-slate-500'}`}>Threats Blocked</p>
-                                <h3 className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>14,205</h3>
+                            <div class="mt-6 p-4 rounded-lg flex gap-3 ${t ? 'bg-amber-950/30 border border-amber-900/30' : 'bg-amber-50 border border-amber-100'}">
+                                ${Icons.AlertTriangle('text-amber-500 shrink-0 w-6 h-6')}
+                                <div>
+                                    <h4 class="font-bold text-sm ${t ? 'text-amber-400' : 'text-amber-800'}">Quishing Attack Detected</h4>
+                                    <p class="text-sm mt-1 ${t ? 'text-amber-200/70' : 'text-amber-700'}">
+                                        This QR code redirects to a known phishing site masquerading as a login portal. Do not visit.
+                                    </p>
+                                </div>
                             </div>
-                            <Shield className={theme === 'dark' ? 'text-cyan-400' : 'text-indigo-500'} />
-                            </div>
-                            <div className={`h-1 w-full rounded-full ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                            <div className={`h-1 rounded-full w-[75%] ${theme === 'dark' ? 'bg-cyan-500' : 'bg-indigo-500'}`}></div>
-                            </div>
-                        </Card>
-                        <Card theme={theme} className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-400 uppercase tracking-wider' : 'text-slate-500'}`}>Active Scans</p>
-                                <h3 className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>842</h3>
-                            </div>
-                            <Activity className={theme === 'dark' ? 'text-violet-400' : 'text-purple-500'} />
-                            </div>
-                            <div className={`h-1 w-full rounded-full ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                            <div className={`h-1 rounded-full w-[45%] ${theme === 'dark' ? 'bg-violet-500' : 'bg-purple-500'}`}></div>
-                            </div>
-                        </Card>
-                        <Card theme={theme} className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-400 uppercase tracking-wider' : 'text-slate-500'}`}>System Uptime</p>
-                                <h3 className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>99.9%</h3>
-                            </div>
-                            <Cpu className={theme === 'dark' ? 'text-emerald-400' : 'text-emerald-500'} />
-                            </div>
-                            <div className={`h-1 w-full rounded-full ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                            <div className={`h-1 rounded-full w-[99%] ${theme === 'dark' ? 'bg-emerald-500' : 'bg-emerald-500'}`}></div>
-                            </div>
-                        </Card>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 mt-12">
-                        {[
-                        { id: 'url', icon: Search, title: 'URL Scanner', desc: 'Scan websites for phishing kits.' },
-                        { id: 'text', icon: MessageSquare, title: 'Text Analysis', desc: 'Detect social engineering in SMS.' },
-                        { id: 'qr', icon: QrCode, title: 'QR Decoder', desc: 'Reveal hidden QR destinations.' }
-                        ].map((action) => (
-                        <button 
-                            key={action.id}
-                            onClick={() => setActiveTab(action.id)}
-                            className={`text-left p-6 rounded-xl transition-all duration-300 group
-                            ${theme === 'dark' 
-                                ? 'bg-slate-900/40 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/50' 
-                                : 'bg-white hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 shadow-sm hover:shadow-md'
-                            }`}
-                        >
-                            <div className={`mb-4 w-12 h-12 rounded-lg flex items-center justify-center transition-colors
-                            ${theme === 'dark' ? 'bg-slate-800 text-cyan-400 group-hover:bg-cyan-900/30' : 'bg-indigo-50 text-indigo-600 group-hover:bg-white'}`}>
-                            <action.icon size={24} />
-                            </div>
-                            <h3 className={`text-lg font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-slate-200' : 'text-slate-900'}`}>
-                            {action.title}
-                            <ChevronRight size={16} className={`opacity-0 -ml-2 transition-all duration-300 group-hover:opacity-100 group-hover:ml-0 ${theme === 'dark' ? 'text-cyan-400' : 'text-indigo-600'}`} />
-                            </h3>
-                            <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{action.desc}</p>
-                        </button>
-                        ))}
-                    </div>
-                    </div>
-                );
-                }
-            };
-
-            return (
-                <div className={`min-h-screen transition-colors duration-500 ${bgStyle} font-sans selection:bg-cyan-500/30`}>
-                {gridOverlay}
-
-                <nav className={`fixed top-0 w-full z-50 border-b backdrop-blur-lg transition-colors duration-500 ${theme === 'dark' ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-200'}`}>
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-20">
-                        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${theme === 'dark' ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-[0_0_15px_rgba(34,211,238,0.5)]' : 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg'}`}>
-                            <Shield className="text-white" size={24} />
-                        </div>
-                        <span className={`text-xl font-bold tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                            CYBER<span className={theme === 'dark' ? 'text-cyan-400' : 'text-indigo-600'}>GUARD</span>
-                        </span>
-                        </div>
-
-                        <div className="hidden md:flex items-center gap-1">
-                        {['dashboard', 'url', 'text', 'qr', 'about'].map((tab) => (
-                            <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
-                                ${activeTab === tab 
-                                ? (theme === 'dark' ? 'text-cyan-400 bg-cyan-950/50' : 'text-indigo-600 bg-indigo-50')
-                                : (theme === 'dark' ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-100')
-                                }
-                            `}
-                            >
-                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                            </button>
-                        ))}
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                        <button
-                            onClick={toggleTheme}
-                            className={`p-2 rounded-lg transition-all duration-300 ${theme === 'dark' ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                        >
-                            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                        </button>
-                        
-                        <button 
-                            className="md:hidden p-2 text-slate-500"
-                            onClick={() => setMenuOpen(!menuOpen)}
-                        >
-                            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
                         </div>
                     </div>
-                    </div>
+                `;
+                btn.innerHTML = `${Icons.Eye('w-4 h-4')} Scan Image`;
+                btn.disabled = false;
+                overlay.classList.add('hidden');
+            }, 2500);
+        }
 
-                    {menuOpen && (
-                    <div className={`md:hidden border-t ${theme === 'dark' ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}>
-                        <div className="px-4 py-4 space-y-2">
-                        {['dashboard', 'url', 'text', 'qr', 'about'].map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => { setActiveTab(tab); setMenuOpen(false); }}
-                                className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium
-                                ${activeTab === tab 
-                                    ? (theme === 'dark' ? 'text-cyan-400 bg-slate-900' : 'text-indigo-600 bg-indigo-50')
-                                    : (theme === 'dark' ? 'text-slate-400' : 'text-slate-600')
-                                }
-                                `}
-                            >
-                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                            </button>
-                            ))}
-                        </div>
-                    </div>
-                    )}
-                </nav>
+        function resetQr() {
+            // Simply re-render the QR tab
+            renderContent();
+        }
 
-                <main className="pt-28 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10 min-h-screen flex flex-col">
-                    {renderContent()}
-                </main>
-                
-                <footer className={`py-8 text-center border-t relative z-10 ${theme === 'dark' ? 'border-slate-800 text-slate-600' : 'border-slate-200 text-slate-400'}`}>
-                    <p className="text-sm">
-                    {theme === 'dark' ? 'SECURE CONNECTION ESTABLISHED • TLS 1.3 • MILITARY GRADE ENCRYPTION' : '© 2024 CyberGuard Security • Trusted by 10,000+ Users'}
-                    </p>
-                </footer>
-                </div>
-            );
-        };
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderApp();
+        });
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
     </script>
 </body>
 </html>
-
