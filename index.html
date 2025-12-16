@@ -46,8 +46,11 @@
 <body>
     <div id="root"></div>
 
-    <script type="text/babel">
+    < type="text/babel">
         const { useState, useEffect, useRef } = React;
+        // 🔗 BACKEND API (DO NOT CHANGE)
+const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
+
 
         // --- Icon Components (Inline SVGs for standalone functionality) ---
         const IconBase = ({ size = 24, className = "", children, ...props }) => (
@@ -214,24 +217,50 @@
             const [isScanning, setIsScanning] = useState(false);
             const [result, setResult] = useState(null);
 
-            const handleScan = () => {
-                if (!url) return;
-                setIsScanning(true);
-                setResult(null);
-                
-                setTimeout(() => {
-                setIsScanning(false);
-                const isMalicious = url.includes('login') || url.includes('bank') || url.includes('free');
-                const score = isMalicious ? Math.floor(Math.random() * 30 + 70) : Math.floor(Math.random() * 20);
-                
-                setResult({
-                    url,
-                    score,
-                    threats: isMalicious ? ['Phishing Attempt', 'Suspicious Domain Age', 'Hidden Redirects'] : [],
-                    details: 'SSL Certificate: Valid (Cloudflare Inc.)\nServer Location: Frankfurt, DE\nDNS Records: 4 A-Records found'
-                });
-                }, 2000);
-            };
+           const handleScan = async () => {
+  if (!url) return;
+
+  setIsScanning(true);
+  setResult(null);
+
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: url,
+        use_openai: true
+      })
+    });
+
+    const data = await res.json();
+
+    // Convert backend risk → UI score
+    const score =
+      data.final_risk?.toLowerCase().includes("high") ? 85 :
+      data.final_risk?.toLowerCase().includes("medium") ? 55 :
+      15;
+
+    setResult({
+      url,
+      score,
+      threats: data.explanation || [],
+      details:
+        `Risk Level: ${data.final_risk}\n` +
+        `Scam Type: ${data.scam_type || "N/A"}`
+    });
+
+  } catch (err) {
+    setResult({
+      url,
+      score: 90,
+      threats: ["Backend unreachable"],
+      details: "Failed to connect to analysis server."
+    });
+  }
+
+  setIsScanning(false);
+};
 
             return (
                 <div className="max-w-4xl mx-auto space-y-8">
@@ -325,26 +354,46 @@
             const [isScanning, setIsScanning] = useState(false);
             const [result, setResult] = useState(null);
 
-            const handleScan = () => {
-                if (!text) return;
-                setIsScanning(true);
-                setResult(null);
+           const handleScan = async () => {
+  if (!text) return;
 
-                setTimeout(() => {
-                setIsScanning(false);
-                const keywords = ['urgent', 'immediately', 'password', 'verify', 'bank', 'suspended', 'account'];
-                const foundKeywords = keywords.filter(k => text.toLowerCase().includes(k));
-                const score = foundKeywords.length * 20;
-                
-                setResult({
-                    score: Math.min(score, 99),
-                    keywords: foundKeywords,
-                    summary: foundKeywords.length > 0 
-                    ? "This message uses urgency and financial triggers common in social engineering attacks." 
-                    : "The text appears neutral and does not contain common scam triggers."
-                });
-                }, 1500);
-            };
+  setIsScanning(true);
+  setResult(null);
+
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text,
+        use_openai: true
+      })
+    });
+
+    const data = await res.json();
+
+    const score =
+      data.final_risk?.toLowerCase().includes("high") ? 80 :
+      data.final_risk?.toLowerCase().includes("medium") ? 50 : 10;
+
+    setResult({
+      score,
+      keywords: [],
+      summary: Array.isArray(data.explanation)
+        ? data.explanation.join(" ")
+        : data.explanation
+    });
+
+  } catch (err) {
+    setResult({
+      score: 90,
+      keywords: [],
+      summary: "Backend connection failed."
+    });
+  }
+
+  setIsScanning(false);
+};
 
             const highlightText = (content, keywords) => {
                 if (!keywords || keywords.length === 0) return content;
@@ -820,3 +869,4 @@
     </script>
 </body>
 </html>
+
