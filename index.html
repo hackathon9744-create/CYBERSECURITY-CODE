@@ -523,9 +523,10 @@
       }">
         <h3 class="text-xl font-bold mb-2">Scan Result</h3>
         <p><b>Risk:</b> ${data.final_risk}</p>
-        <p><b>Score:</b> ${data.score}</p>
-        <p><b>Type:</b> ${data.scam_type}</p>
-        <p class="mt-2">${Array.isArray(data.explanation) ? data.explanation.join(" ") : data.explanation}</p>
+<p><b>Confidence:</b> ${(data.final_score * 100).toFixed(1)}%</p>
+<p class="mt-2">
+  ${data.message_analysis?.summary || "No explanation provided"}
+</p>
       </div>
     `;
   } catch (err) {
@@ -569,8 +570,10 @@
       <div class="p-6 rounded-lg border ${boxClass}">
         <h3 class="text-xl font-bold mb-2">Text Scan Result</h3>
         <p><b>Risk:</b> ${data.final_risk}</p>
-        <p><b>Type:</b> ${data.scam_type}</p>
-        <p class="mt-2">${Array.isArray(data.explanation) ? data.explanation.join(" ") : data.explanation}</p>
+<p><b>Confidence:</b> ${(data.final_score * 100).toFixed(1)}%</p>
+<p class="mt-2">
+  ${data.message_analysis?.summary || "No explanation provided"}
+</p>
       </div>
     `;
   } catch (err) {
@@ -642,6 +645,7 @@ function resetQr() {
     </script>
 </body>
 </html>
+
 
 
 
