@@ -487,8 +487,9 @@
             renderNavbar(); // Update active states
             renderContent();
         }
-
-        function runUrlScan() async function runUrlScan() {
+  
+        
+  async function runUrlScan() {
   const input = document.getElementById("urlInput");
   const resultDiv = document.getElementById("urlResultContainer");
   const btn = document.getElementById("scanBtn");
@@ -535,78 +536,12 @@
   btn.innerText = "Analyze URL";
 }
           
-                        <li class="flex items-start gap-3 p-3 rounded-lg ${t ? 'bg-red-950/20 border border-red-900/50' : 'bg-red-50'}">
-                            ${Icons.AlertOctagon('text-red-500 w-5 h-5 mt-0.5')}
-                            <span class="${t ? 'text-red-200' : 'text-red-800'}">Phishing Attempt Detected</span>
-                        </li>
-                        <li class="flex items-start gap-3 p-3 rounded-lg ${t ? 'bg-red-950/20 border border-red-900/50' : 'bg-red-50'}">
-                             ${Icons.AlertOctagon('text-red-500 w-5 h-5 mt-0.5')}
-                             <span class="${t ? 'text-red-200' : 'text-red-800'}">Suspicious Domain Age</span>
-                        </li>
-                      `
-                    : `
-                        <li class="flex items-center gap-3 p-3 rounded-lg ${t ? 'bg-emerald-950/20 border border-emerald-900/50' : 'bg-emerald-50'}">
-                            ${Icons.CheckCircle('text-emerald-500 w-5 h-5')}
-                            <span class="${t ? 'text-emerald-200' : 'text-emerald-800'}">No malware signatures found.</span>
-                        </li>
-                      `;
-
-                const badgeColor = score > 50 
-                    ? (t ? "text-red-400 bg-red-950/50 border-red-500/30" : "text-rose-600 bg-rose-50 border-rose-100")
-                    : (t ? "text-emerald-400 bg-emerald-950/50 border-emerald-500/30" : "text-emerald-600 bg-emerald-50 border-emerald-100");
-
-                resultDiv.innerHTML = `
-                    <div class="animate-fade-in-up mt-8">
-                        <div class="${getCardStyles(state.theme)} p-0 overflow-hidden">
-                            <div class="p-6 border-b ${t ? 'border-slate-800 bg-slate-900/80' : 'border-slate-100 bg-slate-50'}">
-                                <div class="flex justify-between items-center">
-                                    <h3 class="text-xl font-bold flex items-center gap-2 ${t ? 'text-white' : 'text-slate-800'}">
-                                        ${Icons.Activity(t ? 'text-cyan-400' : 'text-indigo-600')} Scan Results
-                                    </h3>
-                                    <span class="px-3 py-1 text-xs font-bold border ${t ? 'rounded-none tracking-widest uppercase' : 'rounded-full'} ${badgeColor}">
-                                        ${score > 50 ? 'HIGH RISK DETECTED' : 'SAFE TO VISIT'}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="p-8 grid md:grid-cols-2 gap-12 items-center">
-                                ${RiskMeter(score, state.theme)}
-                                <div class="space-y-6">
-                                    <div>
-                                        <h4 class="text-sm font-semibold mb-3 ${t ? 'text-slate-400 uppercase tracking-widest' : 'text-slate-500 uppercase'}">Threat Analysis</h4>
-                                        <ul class="space-y-3">${threatList}</ul>
-                                    </div>
-                                    <div class="p-4 rounded-lg font-mono text-sm ${t ? 'bg-slate-950 text-cyan-400/80 border border-slate-800' : 'bg-slate-100 text-slate-600'}">
-                                        <pre class="whitespace-pre-wrap">SSL Certificate: Valid (Cloudflare Inc.)\nServer Location: Frankfurt, DE\nDNS Records: 4 A-Records found</pre>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                btn.innerHTML = `${Icons.Search('w-4 h-4')} Analyze URL`;
-                btn.disabled = false;
-            }, 2000);
-        }
-
-        function runTextScan() {
-            const input = document.getElementById('textInput');
-            const resultDiv = document.getElementById('textResultContainer');
-            const btn = document.getElementById('textScanBtn');
-            const text = input.value;
-            const t = state.theme === 'dark';
-
-            if (!text) return;
-
-            btn.innerHTML = 'Analyzing...';
-            btn.disabled = true;
-            resultDiv.innerHTML = `<div class="${getCardStyles(state.theme)} h-full flex items-center justify-center min-h-[400px]">${ScanningLoader(state.theme)}</div>`;
-
-           async function runTextScan() {
+            async function runTextScan() {
   const input = document.getElementById("textInput");
   const resultDiv = document.getElementById("textResultContainer");
   const btn = document.getElementById("textScanBtn");
-  const text = input.value.trim();
 
+  const text = input.value.trim();
   if (!text) return;
 
   btn.disabled = true;
@@ -624,78 +559,30 @@
     });
 
     const data = await res.json();
+    const risk = data.final_risk.toLowerCase();
 
-    // Color based on backend result
-    if (data.final_risk === "High") {
-      resultDiv.style.background = "#3b0d0d";
-      resultDiv.style.color = "#ff6b6b";
-    } else if (data.final_risk === "Medium") {
-      resultDiv.style.background = "#3a2e0d";
-      resultDiv.style.color = "#facc15";
-    } else {
-      resultDiv.style.background = "#0d3b1d";
-      resultDiv.style.color = "#4ade80";
-    }
+    let boxClass = "bg-emerald-950 border-emerald-500 text-emerald-400";
+    if (risk === "high") boxClass = "bg-red-950 border-red-500 text-red-400";
+    else if (risk === "medium") boxClass = "bg-amber-950 border-amber-500 text-amber-400";
 
-    resultDiv.innerText =
-      `Risk: ${data.final_risk}\n` +
-      `Scam Type: ${data.scam_type}\n\n` +
-      (Array.isArray(data.explanation)
-        ? data.explanation.join(" ")
-        : data.explanation);
-
+    resultDiv.innerHTML = `
+      <div class="p-6 rounded-lg border ${boxClass}">
+        <h3 class="text-xl font-bold mb-2">Text Scan Result</h3>
+        <p><b>Risk:</b> ${data.final_risk}</p>
+        <p><b>Type:</b> ${data.scam_type}</p>
+        <p class="mt-2">${Array.isArray(data.explanation) ? data.explanation.join(" ") : data.explanation}</p>
+      </div>
+    `;
   } catch (err) {
-    resultDiv.style.background = "#3b0d0d";
-    resultDiv.innerText = "❌ Backend unreachable";
+    resultDiv.innerHTML = "❌ Backend unreachable";
   }
 
   btn.disabled = false;
   btn.innerText = "Analyze Text";
 }
+ 
                 
-                // Highlight text logic
-                let highlightedText = text.substring(0, 150) + (text.length > 150 ? '...' : '');
-                const regex = new RegExp(`(${keywords.join('|')})`, 'gi');
-                highlightedText = highlightedText.replace(regex, (match) => {
-                    return `<span class="${t ? 'bg-red-500/30 text-red-200 border-b border-red-500' : 'bg-rose-100 text-rose-800 font-bold'}">${match}</span>`;
-                });
-
-                const badgeColor = score > 50 
-                    ? (t ? "text-red-400 bg-red-950/50 border-red-500/30" : "text-rose-600 bg-rose-50 border-rose-100")
-                    : (t ? "text-emerald-400 bg-emerald-950/50 border-emerald-500/30" : "text-emerald-600 bg-emerald-50 border-emerald-100");
-
-                resultDiv.innerHTML = `
-                     <div class="${getCardStyles(state.theme)} h-full animate-fade-in-up">
-                        <div class="p-4 border-b ${t ? 'border-slate-800 bg-slate-900/50' : 'border-slate-100 bg-slate-50'}">
-                            <span class="text-sm font-bold uppercase tracking-wider ${t ? 'text-cyan-500' : 'text-indigo-500'}">Analysis Report</span>
-                        </div>
-                        <div class="p-6 space-y-6">
-                            <div class="flex items-center justify-between">
-                                <span class="${t ? 'text-slate-400' : 'text-slate-600'}">Risk Probability</span>
-                                <span class="px-3 py-1 text-xs font-bold border ${t ? 'rounded-none tracking-widest uppercase' : 'rounded-full'} ${badgeColor}">
-                                    ${score > 50 ? 'HIGH PROBABILITY' : 'LOW PROBABILITY'}
-                                </span>
-                            </div>
-                            <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                                <div class="h-full transition-all duration-1000 ${score > 50 ? 'bg-red-500' : 'bg-emerald-500'}" style="width: ${score}%"></div>
-                            </div>
-                            <div class="p-4 rounded-lg text-sm leading-relaxed ${t ? 'bg-slate-950 border border-slate-800 text-slate-300' : 'bg-slate-50 text-slate-700'}">
-                                <p class="mb-2 font-semibold">Message Preview (Highlighted Triggers):</p>
-                                <p>"${highlightedText}"</p>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="${t ? 'text-amber-400' : 'text-amber-500'}">${Icons.Zap()}</div>
-                                <p class="text-sm ${t ? 'text-slate-400' : 'text-slate-600'}">
-                                    ${foundKeywords.length > 0 ? "This message uses urgency and financial triggers common in social engineering attacks." : "The text appears neutral and does not contain common scam triggers."}
-                                </p>
-                            </div>
-                        </div>
-                     </div>
-                `;
-                btn.innerHTML = `${Icons.MessageSquare('w-4 h-4')} Analyze Text`;
-                btn.disabled = false;
-            }, 1500);
-        }
+        
 
         function handleQrUpload(input) {
             const uploadArea = document.getElementById('qrUploadArea');
@@ -725,32 +612,28 @@
             `;
         }
 
-        function startQrScan() {
-            const btn = document.getElementById('qrScanBtn');
-            const overlay = document.getElementById('scanOverlay');
-            const resultDiv = document.getElementById('qrResultContainer');
-            const t = state.theme === 'dark';
+       function startQrScan() {
+    const btn = document.getElementById('qrScanBtn');
+    const overlay = document.getElementById('scanOverlay');
+    const resultDiv = document.getElementById('qrResultContainer');
+    const t = state.theme === 'dark';
 
-            btn.innerHTML = 'Decoding...';
-            btn.disabled = true;
-            overlay.classList.remove('hidden');
+    btn.innerHTML = 'Decoding...';
+    btn.disabled = true;
+    overlay.classList.remove('hidden');
 
-            // Dummy skeleton loader in result div
-            resultDiv.innerHTML = `
-                <div class="space-y-4">
-                    <div class="h-4 rounded w-3/4 animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
-                    <div class="h-4 rounded w-1/2 animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
-                    <div class="h-4 rounded w-full animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
-                </div>
-            `;
+    resultDiv.innerHTML = `
+        <div class="space-y-4">
+            <div class="h-4 rounded w-3/4 animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
+            <div class="h-4 rounded w-1/2 animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
+            <div class="h-4 rounded w-full animate-pulse ${t ? 'bg-slate-800' : 'bg-slate-200'}"></div>
+        </div>
+    `;
+} // ✅ THIS WAS MISSING
 
-          
-
-        function resetQr() {
-            // Simply re-render the QR tab
-            renderContent();
-        }
-
+function resetQr() {
+    renderContent();
+}
         // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
             renderApp();
@@ -759,5 +642,6 @@
     </script>
 </body>
 </html>
+
 
 
