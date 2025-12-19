@@ -526,6 +526,10 @@
 
     const data = await res.json();
     saveScan("URL", data);
+      function getScanHistory() {
+  const data = localStorage.getItem("scanHistory");
+  return data ? JSON.parse(data) : [];
+}
 
     const isHigh = data.final_risk.toLowerCase() === "high";
 
@@ -575,6 +579,10 @@
 
     const data = await res.json();
     saveScan("TEXT", data);
+      function getScanHistory() {
+  const data = localStorage.getItem("scanHistory");
+  return data ? JSON.parse(data) : [];
+}
     const risk = data.final_risk.toLowerCase();
 
     let boxClass = "bg-emerald-950 border-emerald-500 text-emerald-400";
@@ -660,6 +668,7 @@ function resetQr() {
     </script>
 </body>
 </html>
+
 
 
 
