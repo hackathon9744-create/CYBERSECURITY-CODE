@@ -72,6 +72,19 @@
             scanResult: null
         };
 
+        function saveScan(type, result) {
+  const history = JSON.parse(localStorage.getItem("scanHistory")) || [];
+
+  history.unshift({
+    type: type,
+    risk: result.final_risk,
+    score: Math.round(result.final_score * 100),
+    time: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("scanHistory", JSON.stringify(history.slice(0, 10)));
+}
+
         // --- Icons (SVG Templates) ---
         const Icons = {
             Shield: (cls) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
@@ -512,6 +525,7 @@
     });
 
     const data = await res.json();
+    saveScan("URL", data);
 
     const isHigh = data.final_risk.toLowerCase() === "high";
 
@@ -560,6 +574,7 @@
     });
 
     const data = await res.json();
+    saveScan("TEXT", data);
     const risk = data.final_risk.toLowerCase();
 
     let boxClass = "bg-emerald-950 border-emerald-500 text-emerald-400";
@@ -645,6 +660,7 @@ function resetQr() {
     </script>
 </body>
 </html>
+
 
 
 
