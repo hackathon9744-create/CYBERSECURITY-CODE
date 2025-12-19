@@ -488,61 +488,52 @@
             renderContent();
         }
 
-        function runUrlScan() {
-            const input = document.getElementById('urlInput');
-            const resultDiv = document.getElementById('urlResultContainer');
-            const btn = document.getElementById('scanBtn');
-            const url = input.value;
-            const t = state.theme === 'dark';
+        function runUrlScan() async function runUrlScan() {
+  const input = document.getElementById("urlInput");
+  const resultDiv = document.getElementById("urlResultContainer");
+  const btn = document.getElementById("scanBtn");
 
-            if (!url) return;
+  const url = input.value.trim();
+  if (!url) return;
 
-            // Loading State
-            btn.innerHTML = 'Scanning...';
-            btn.disabled = true;
-            resultDiv.innerHTML = ScanningLoader(state.theme);
-            async function handleScan() {
-  const input = document.getElementById("urlInput").value;
-  const resultBox = document.getElementById("resultBox");
-
-  if (!input) return;
-
-  resultBox.innerText = "🔍 Analyzing...";
-  resultBox.className = "";
+  btn.disabled = true;
+  btn.innerText = "Scanning...";
+  resultDiv.innerHTML = "🔍 Analyzing URL...";
 
   try {
     const res = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text: input,
+        text: url,
         use_openai: true
       })
     });
 
     const data = await res.json();
 
-    // COLOR CONTROL (REAL DATA)
-    if (data.final_risk.toLowerCase() === "high") {
-      resultBox.style.background = "#3b0d0d";
-      resultBox.style.color = "#ff6b6b";
-    } else {
-      resultBox.style.background = "#0d3b1d";
-      resultBox.style.color = "#4ade80";
-    }
+    const isHigh = data.final_risk.toLowerCase() === "high";
 
-    resultBox.innerText =
-      `Risk: ${data.final_risk}\n` +
-      `Score: ${data.score}\n` +
-      `Type: ${data.scam_type}\n\n` +
-      data.explanation.join(" ");
-
+    resultDiv.innerHTML = `
+      <div class="mt-6 p-6 rounded-lg border ${
+        isHigh
+          ? "bg-red-950 border-red-500 text-red-400"
+          : "bg-emerald-950 border-emerald-500 text-emerald-400"
+      }">
+        <h3 class="text-xl font-bold mb-2">Scan Result</h3>
+        <p><b>Risk:</b> ${data.final_risk}</p>
+        <p><b>Score:</b> ${data.score}</p>
+        <p><b>Type:</b> ${data.scam_type}</p>
+        <p class="mt-2">${Array.isArray(data.explanation) ? data.explanation.join(" ") : data.explanation}</p>
+      </div>
+    `;
   } catch (err) {
-    resultBox.style.background = "#3b0d0d";
-    resultBox.innerText = "❌ Backend unreachable";
+    resultDiv.innerHTML = "❌ Backend unreachable";
   }
-}
 
+  btn.disabled = false;
+  btn.innerText = "Analyze URL";
+}
           
                         <li class="flex items-start gap-3 p-3 rounded-lg ${t ? 'bg-red-950/20 border border-red-900/50' : 'bg-red-50'}">
                             ${Icons.AlertOctagon('text-red-500 w-5 h-5 mt-0.5')}
@@ -753,39 +744,7 @@
                 </div>
             `;
 
-            setTimeout(() => {
-                const decoded = "https://secure-login-update-x9.com/verify";
-                
-                resultDiv.innerHTML = `
-                    <div class="animate-fade-in-right space-y-6">
-                        <div class="${getCardStyles(state.theme)} p-6 border-l-4 border-l-red-500">
-                            <h3 class="text-lg font-bold mb-4 ${t ? 'text-white' : 'text-slate-800'}">Scan Complete</h3>
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center">
-                                    <span class="${t ? 'text-slate-400' : 'text-slate-500'}">Decoded URL</span>
-                                    <span class="px-3 py-1 text-xs font-bold border ${t ? 'rounded-none tracking-widest uppercase text-red-400 bg-red-950/50 border-red-500/30' : 'rounded-full text-rose-600 bg-rose-50 border-rose-100'}">MALICIOUS</span>
-                                </div>
-                                <div class="p-3 rounded font-mono text-sm break-all ${t ? 'bg-slate-950 text-red-400 border border-red-900/30' : 'bg-red-50 text-red-700'}">
-                                    ${decoded}
-                                </div>
-                            </div>
-                            <div class="mt-6 p-4 rounded-lg flex gap-3 ${t ? 'bg-amber-950/30 border border-amber-900/30' : 'bg-amber-50 border border-amber-100'}">
-                                ${Icons.AlertTriangle('text-amber-500 shrink-0 w-6 h-6')}
-                                <div>
-                                    <h4 class="font-bold text-sm ${t ? 'text-amber-400' : 'text-amber-800'}">Quishing Attack Detected</h4>
-                                    <p class="text-sm mt-1 ${t ? 'text-amber-200/70' : 'text-amber-700'}">
-                                        This QR code redirects to a known phishing site masquerading as a login portal. Do not visit.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                btn.innerHTML = `${Icons.Eye('w-4 h-4')} Scan Image`;
-                btn.disabled = false;
-                overlay.classList.add('hidden');
-            }, 2500);
-        }
+          
 
         function resetQr() {
             // Simply re-render the QR tab
@@ -800,4 +759,5 @@
     </script>
 </body>
 </html>
+
 
