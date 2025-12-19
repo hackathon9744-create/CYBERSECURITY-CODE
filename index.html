@@ -527,8 +527,7 @@
     const data = await res.json();
     saveScan("URL", data);
       function getScanHistory() {
-  const data = localStorage.getItem("scanHistory");
-  return data ? JSON.parse(data) : [];
+  return JSON.parse(localStorage.getItem("scanHistory")) || [];
 }
 
     const isHigh = data.final_risk.toLowerCase() === "high";
@@ -579,9 +578,8 @@
 
     const data = await res.json();
     saveScan("TEXT", data);
-      function getScanHistory() {
-  const data = localStorage.getItem("scanHistory");
-  return data ? JSON.parse(data) : [];
+     function getScanHistory() {
+  return JSON.parse(localStorage.getItem("scanHistory")) || [];
 }
     const risk = data.final_risk.toLowerCase();
 
@@ -668,6 +666,7 @@ function resetQr() {
     </script>
 </body>
 </html>
+
 
 
 
