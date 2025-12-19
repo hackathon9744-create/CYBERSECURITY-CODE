@@ -62,6 +62,7 @@
 
     <!-- JavaScript Logic -->
     <script>
+        const BACKEND_URL = "https://cybersecurity-code-1.onrender.com/analyze";
         // --- State Management ---
         const state = {
             theme: 'dark', // 'dark' or 'light'
@@ -500,12 +501,49 @@
             btn.innerHTML = 'Scanning...';
             btn.disabled = true;
             resultDiv.innerHTML = ScanningLoader(state.theme);
+            async function handleScan() {
+  const input = document.getElementById("urlInput").value;
+  const resultBox = document.getElementById("resultBox");
 
-            setTimeout(() => {
-                const isMalicious = url.includes('login') || url.includes('bank') || url.includes('free');
-                const score = isMalicious ? Math.floor(Math.random() * 30 + 70) : Math.floor(Math.random() * 20);
-                const threatList = isMalicious 
-                    ? `
+  if (!input) return;
+
+  resultBox.innerText = "🔍 Analyzing...";
+  resultBox.className = "";
+
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: input,
+        use_openai: true
+      })
+    });
+
+    const data = await res.json();
+
+    // COLOR CONTROL (REAL DATA)
+    if (data.final_risk.toLowerCase() === "high") {
+      resultBox.style.background = "#3b0d0d";
+      resultBox.style.color = "#ff6b6b";
+    } else {
+      resultBox.style.background = "#0d3b1d";
+      resultBox.style.color = "#4ade80";
+    }
+
+    resultBox.innerText =
+      `Risk: ${data.final_risk}\n` +
+      `Score: ${data.score}\n` +
+      `Type: ${data.scam_type}\n\n` +
+      data.explanation.join(" ");
+
+  } catch (err) {
+    resultBox.style.background = "#3b0d0d";
+    resultBox.innerText = "❌ Backend unreachable";
+  }
+}
+
+          
                         <li class="flex items-start gap-3 p-3 rounded-lg ${t ? 'bg-red-950/20 border border-red-900/50' : 'bg-red-50'}">
                             ${Icons.AlertOctagon('text-red-500 w-5 h-5 mt-0.5')}
                             <span class="${t ? 'text-red-200' : 'text-red-800'}">Phishing Attempt Detected</span>
@@ -572,10 +610,57 @@
             btn.disabled = true;
             resultDiv.innerHTML = `<div class="${getCardStyles(state.theme)} h-full flex items-center justify-center min-h-[400px]">${ScanningLoader(state.theme)}</div>`;
 
-            setTimeout(() => {
-                const keywords = ['urgent', 'immediately', 'password', 'verify', 'bank', 'suspended', 'account'];
-                const foundKeywords = keywords.filter(k => text.toLowerCase().includes(k));
-                const score = Math.min(foundKeywords.length * 20, 99);
+           async function runTextScan() {
+  const input = document.getElementById("textInput");
+  const resultDiv = document.getElementById("textResultContainer");
+  const btn = document.getElementById("textScanBtn");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  btn.disabled = true;
+  btn.innerText = "Analyzing...";
+  resultDiv.innerHTML = "🧠 AI is analyzing text...";
+
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: text,
+        use_openai: true
+      })
+    });
+
+    const data = await res.json();
+
+    // Color based on backend result
+    if (data.final_risk === "High") {
+      resultDiv.style.background = "#3b0d0d";
+      resultDiv.style.color = "#ff6b6b";
+    } else if (data.final_risk === "Medium") {
+      resultDiv.style.background = "#3a2e0d";
+      resultDiv.style.color = "#facc15";
+    } else {
+      resultDiv.style.background = "#0d3b1d";
+      resultDiv.style.color = "#4ade80";
+    }
+
+    resultDiv.innerText =
+      `Risk: ${data.final_risk}\n` +
+      `Scam Type: ${data.scam_type}\n\n` +
+      (Array.isArray(data.explanation)
+        ? data.explanation.join(" ")
+        : data.explanation);
+
+  } catch (err) {
+    resultDiv.style.background = "#3b0d0d";
+    resultDiv.innerText = "❌ Backend unreachable";
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Analyze Text";
+}
                 
                 // Highlight text logic
                 let highlightedText = text.substring(0, 150) + (text.length > 150 ? '...' : '');
@@ -715,3 +800,4 @@
     </script>
 </body>
 </html>
+
