@@ -543,7 +543,14 @@
         <p><b>Risk:</b> ${data.final_risk}</p>
 <p><b>Confidence:</b> ${(data.final_score * 100).toFixed(1)}%</p>
 <p class="mt-2">
-  ${data.message_analysis?.summary || "No explanation provided"}
+${
+  data.message_analysis?.summary ||
+  (data.final_risk === "High"
+    ? "This URL shows strong phishing indicators such as impersonation patterns or malicious intent."
+    : data.final_risk === "Suspicious"
+    ? "This URL contains patterns commonly used in phishing or scam links."
+    : "No known malicious indicators detected.")
+}
 </p>
       </div>
     `;
@@ -665,6 +672,7 @@ function resetQr() {
     </script>
 </body>
 </html>
+
 
 
 
