@@ -37,11 +37,20 @@ def extract_message_features(msg: str):
     "model_probability": ml_score,
 
    
-    "message_analysis": {
-        "summary": llm_out.get("summary", ""),
-        "confidence": llm_out.get("confidence", 0),
-        "scam_type": llm_out.get("scam_type", "Unknown")
-    },
+   summary_text = llm_out.get("summary")
+
+if not summary_text:
+    summary_text = (
+        f"This input was classified as {risk.lower()} because it "
+        f"contains patterns commonly seen in scams, such as "
+        f"{', '.join(feats['tokens_detected']) or 'suspicious structure'}."
+    )
+
+"message_analysis": {
+    "summary": summary_text,
+    "confidence": llm_out.get("confidence", round(final_score, 2)),
+    "scam_type": llm_out.get("scam_type", "Generic Scam")
+},
 
    
     "llm": llm_out,
