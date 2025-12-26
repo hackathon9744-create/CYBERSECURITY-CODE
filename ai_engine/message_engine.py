@@ -26,21 +26,28 @@ def extract_message_features(msg: str):
     exclam = m.count("!")
     upper_ratio = sum(1 for c in msg if c.isupper()) / max(1, len(msg))
 
-    return {
-        "message": msg,
-        "tokens_detected": tokens,
-        "suspicious_tokens": bool(tokens),
-        "urgency_flag": urgency,
-        "numbers_present": numbers,
-        "uppercase_ratio": round(upper_ratio,3),
-        # Numeric ML features:
-        "f_length": len(msg),
-        "f_numbers": numbers,
-        "f_upper_ratio": round(upper_ratio,3),
-        "f_exclamations": exclam,
-        "f_suspicious_flag": 1 if tokens else 0,
-        "f_urgency_flag": 1 if urgency else 0
-    }
+   return {
+    "message": msg,
+
+  
+    "final_risk": risk,
+    "final_score": round(final_score, 3),
+
+   
+    "model_probability": ml_score,
+
+   
+    "message_analysis": {
+        "summary": llm_out.get("summary", ""),
+        "confidence": llm_out.get("confidence", 0),
+        "scam_type": llm_out.get("scam_type", "Unknown")
+    },
+
+   
+    "llm": llm_out,
+    "indicators": feats["tokens_detected"],
+    "features": feats
+}
 
 def ml_predict_proba(feats):
     if clf is None:
